@@ -397,7 +397,9 @@ class PurchaseService:
             product_sales[sl.product_id]['monto_90_dias'] += sl.monto_90_dias
             product_sales[sl.product_id]['ventas_90_dias'] += sl.ventas_90_dias
 
-            if sl.estado in ('bajo_minimo', 'sin_stock'):
+            # Solo incluir si está bajo mínimo Y tiene stock_minimo > 0
+            # (si stock_minimo = 0 significa que ese depósito no vende ese producto)
+            if sl.estado in ('bajo_minimo', 'sin_stock') and sl.stock_minimo > 0:
                 product_sales[sl.product_id]['depositos_bajo_minimo'].append({
                     'deposito': sl.deposito_nombre,
                     'stock_actual': sl.stock_actual,
