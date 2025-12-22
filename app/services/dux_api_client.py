@@ -33,10 +33,10 @@ class RateLimitHandler:
     """Maneja el rate limiting de forma inteligente"""
 
     def __init__(self,
-                 requests_per_minute: int = 12,    # 1 cada 5 segundos = 12 por minuto
-                 requests_per_second: float = 0.2, # 1 cada 5 segundos (DUX API limit)
+                 requests_per_minute: int = 6,     # 1 cada 10 segundos = 6 por minuto
+                 requests_per_second: float = 0.1, # 1 cada 10 segundos (más conservador para DUX API)
                  backoff_factor: float = 2.0,
-                 max_backoff: int = 30):           # Máximo 30 segundos de espera
+                 max_backoff: int = 60):           # Máximo 60 segundos de espera
         """
         Args:
             requests_per_minute: Límite de requests por minuto
@@ -134,9 +134,9 @@ class DuxAPIClient:
                  base_url: str,
                  token: str,
                  empresa_id: int = None,
-                 requests_per_minute: int = 12,    # 1 cada 5 segundos = 12 por minuto
-                 requests_per_second: float = 0.2, # 1 cada 5 segundos (DUX API limit)
-                 max_retries: int = 5,
+                 requests_per_minute: int = 6,     # 1 cada 10 segundos = 6 por minuto
+                 requests_per_second: float = 0.1, # 1 cada 10 segundos (más conservador para DUX API)
+                 max_retries: int = 10,            # Más reintentos antes de fallar
                  timeout: int = 60):
         """
         Args:
