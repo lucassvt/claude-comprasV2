@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# Entorno
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Exports y archivos temporales
+exports/
+*.xlsx
+*.dump
+*.tar.gz
+
+# Utilidades locales
+utilidades/
+
+# Archivos de debug
+scripts/debug_*.py
+check_*.py
+debug_*.py
+
+# Otros
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini

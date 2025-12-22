@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Compras - La Mascotera</title>
+    <link rel="icon" type="image/png" href="/imagenes/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0066CC;
+            --primary-dark: #004C99;
+            --primary-light: #3399FF;
+            --accent-orange: #FF6B35;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --text-light: #94A3B8;
+            --border-color: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            height: 60px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text .subtitle {
+            font-size: 0.75em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        nav {
+            display: flex;
+            gap: 5px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        nav a svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            flex: 1;
+        }
+
+        .section {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning), #D97706);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 25px;
+            border-radius: 14px;
+            text-align: center;
+            border-left: 4px solid var(--primary-blue);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger);
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning);
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+        }
+
+        .stat-number {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .alert-box.warning {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 1px solid #fcd34d;
+        }
+
+        .alert-box.danger {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-box strong {
+            color: var(--text-dark);
+        }
+
+        .alert-box small {
+            display: block;
+            margin-top: 5px;
+            color: var(--text-gray);
+        }
+
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .radio-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--primary-blue);
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        /* Export Grid */
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .export-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+
+        .export-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .export-item h4 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .export-item p {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .last-update {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-top: 15px;
+            padding: 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        .note {
+            font-size: 0.85em;
+            color: var(--text-gray);
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid var(--primary-light);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--text-dark), #0f172a);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-main img {
+            height: 40px;
+        }
+
+        .footer-text {
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .footer-developer {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        .footer-quote {
+            margin-top: 20px;
+            font-size: 0.9em;
+            font-style: italic;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6, #60a5fa);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease infinite;
+            font-weight: 500;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .alert-box {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="/imagenes/logo%20La%20Mascotera%20(1).png" alt="La Mascotera">
+                <div class="logo-text">
+                    <h1>SISTEMA DE COMPRAS</h1>
+                    <span class="subtitle">Optimizacion de Stock y Distribucion v2.0</span>
+                </div>
+            </div>
+            <nav>
+                <a href="/" class="active">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/config">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Configuracion
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Resumen General -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                Resumen General
+            </h2>
+            <div class="stats-grid" id="statsGridValues">
+                <div class="stat-card" style="border-left: 4px solid var(--primary);">
+                    <div class="stat-number" id="statValorStockTotal" style="font-size: 1.1rem;">$-</div>
+                    <div class="stat-label">Valor Stock Total</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--warning);">
+                    <div class="stat-number" id="statValorInmovilizado" style="font-size: 1.1rem;">$-</div>
+                    <div class="stat-label">Valor Inmovilizado</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--accent);">
+                    <div class="stat-number" id="statSkusTotal">-</div>
+                    <div class="stat-label">SKUs Sistema</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid var(--danger);">
+                    <div class="stat-number" id="statSkusBajoMinimo">-</div>
+                    <div class="stat-label">SKUs Bajo Minimo</div>
+                </div>
+                <div class="stat-card" style="border-left: 4px solid #e74c3c;">
+                    <div class="stat-number" id="statSkusTopBajoMinimo">-</div>
+                    <div class="stat-label">SKUs TOP Bajo Minimo</div>
+                </div>
+            </div>
+
+            <!-- Info de Sincronizaciones -->
+            <div id="syncInfoContainer" style="margin-top: 15px; padding: 12px 15px; background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border);">
+                <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.75rem; color: var(--text-secondary);">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        <span>Sync Stock: <strong id="syncStockTime">-</strong></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        <span>Sync Ventas: <strong id="syncVentasTime">-</strong></span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        <span>Calculo Stock Min/Max: <strong id="syncStockIdealTime">-</strong></span>
+                    </div>
+                </div>
+
+                <!-- Botones de Sincronizacion -->
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 10px;">
+                    <button class="btn btn-primary btn-sm" id="btnSyncStock" onclick="syncStock()" style="font-size: 0.75rem; padding: 6px 12px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                        Sync Stock
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="btnSyncVentas" onclick="syncVentas()" style="font-size: 0.75rem; padding: 6px 12px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Sync Ventas
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="btnRecalcStock" onclick="recalculateStock()" style="font-size: 0.75rem; padding: 6px 12px;">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        Recalcular Min/Max
+                    </button>
+                </div>
+                <div class="loading" id="loadingSync" style="margin-top: 10px;">
+                    <div class="spinner"></div>
+                    <p id="loadingSyncText">Sincronizando...</p>
+                </div>
+                <div class="message" id="messageSync" style="margin-top: 10px;"></div>
+            </div>
+        </section>
+
+        <!-- Generar Propuestas -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                </svg>
+                Generar Propuestas
+            </h2>
+
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="targetLevel" value="minimo"> Llevar al Minimo
+                </label>
+                <label>
+                    <input type="radio" name="targetLevel" value="ideal" checked> Llevar al Ideal
+                </label>
+                <label>
+                    <input type="radio" name="targetLevel" value="maximo"> Llevar al Maximo
+                </label>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="btn btn-success" onclick="exportDistribution()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    Generar Reparto Central
+                </button>
+                <button class="btn btn-primary" onclick="exportPurchases()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Propuesta de Compra
+                </button>
+                <button class="btn btn-warning" onclick="exportExcessRedistribution()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    Redistribucion de Excedentes
+                </button>
+            </div>
+
+            <p class="note">
+                <strong>Nota:</strong> Si el deposito central (DEPOSITO RUTA 9) no puede cubrir la necesidad de una sucursal, el faltante se agrega automaticamente a la lista de compras.
+            </p>
+
+            <div class="loading" id="loadingExport">
+                <div class="spinner"></div>
+                <p id="loadingExportText">Sincronizando stock desde DUX y generando archivo...</p>
+            </div>
+            <div class="message" id="messageExport"></div>
+        </section>
+
+        <!-- Exportar Referencias -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Exportar Referencias
+            </h2>
+            <div class="export-grid">
+                <div class="export-item">
+                    <h4>Referencias de Stock</h4>
+                    <p>Excel con stock min/ideal/max de todos los depositos y productos.</p>
+                    <button class="btn btn-primary" onclick="exportStockReferences()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar Referencias
+                    </button>
+                </div>
+                <div class="export-item">
+                    <h4>Detalle de Calculo</h4>
+                    <p>Excel con una hoja por deposito, incluyendo ventas y factores usados.</p>
+                    <button class="btn btn-primary" onclick="exportCalculationDetail()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar Detalle
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alerta TOP 200 -->
+        <section class="section" id="sectionTop200">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                ALERTA: Productos TOP 200 Bajo Minimo
+            </h2>
+            <div class="alert-box warning" id="alertTop200">
+                <div>
+                    <strong id="top200Count">0 productos TOP</strong> estan bajo stock minimo.
+                    <small>Los TOP 200 son los productos con mayor importe de ventas en los ultimos 90 dias.</small>
+                </div>
+                <div>
+                    <button class="btn btn-warning" onclick="exportTop200()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar Excel TOP bajo minimo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stock Inmovilizado -->
+        <section class="section" id="sectionInmovilizado">
+            <h2 class="section-title" style="color: var(--warning); border-bottom-color: var(--warning);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                STOCK INMOVILIZADO
+            </h2>
+            <div class="alert-box warning" id="alertInmovilizado">
+                <div>
+                    <strong id="inmovilizadoCount">0 productos</strong> con stock excedente detectados.
+                    <small>Capital inmovilizado: $<span id="valorInmovilizado">0</span></small>
+                </div>
+                <div>
+                    <button class="btn btn-warning" onclick="exportImmobilizedStock()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar Stock Inmovilizado
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Auditoria - Stock Negativo -->
+        <section class="section" id="sectionAuditoria">
+            <h2 class="section-title" style="color: var(--danger); border-bottom-color: var(--danger);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                AUDITORIA
+            </h2>
+            <div class="alert-box danger" id="alertNegativo">
+                <div>
+                    <strong id="negativoCount">0 productos</strong> con STOCK NEGATIVO detectados.
+                    <small>Estos productos requieren revision por parte de auditoria.</small>
+                </div>
+                <div>
+                    <button class="btn btn-danger" onclick="exportNegativeStock()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar Stock Negativo para Auditoria
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <img src="/imagenes/corazon%20azul.png" alt="Corazon La Mascotera">
+                <span class="footer-text">LA MASCOTERA SAS</span>
+            </div>
+            <div class="footer-developer">
+                Desarrollado por Lucas Salvatierra Software
+            </div>
+            <div class="footer-quote">
+                "Ad astra per aspera"
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Variables globales
+        let lastUpdateTime = null;
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSummary();
+            loadSyncStatus();
+        });
+
+        // Cargar resumen
+        async function loadSummary() {
+            try {
+                const response = await fetch('/api/stock/summary');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    // Actualizar contadores de alertas
+                    document.getElementById('top200Count').textContent = data.top_200_bajo_minimo + ' productos TOP';
+                    document.getElementById('negativoCount').textContent = data.negativos + ' productos';
+
+                    // Valores y SKUs
+                    if (data.extended) {
+                        document.getElementById('statValorStockTotal').textContent = '$' + data.extended.valor_stock_total.toLocaleString('es-AR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        document.getElementById('statSkusTotal').textContent = data.extended.skus_total.toLocaleString();
+                        document.getElementById('statSkusBajoMinimo').textContent = data.extended.skus_bajo_minimo.toLocaleString();
+                        document.getElementById('statSkusTopBajoMinimo').textContent = data.extended.skus_top_bajo_minimo.toLocaleString();
+                    }
+                } else {
+                    document.getElementById('statValorStockTotal').textContent = '$-';
+                    document.getElementById('statSkusTotal').textContent = '-';
+                    document.getElementById('statSkusBajoMinimo').textContent = '-';
+                    document.getElementById('statSkusTopBajoMinimo').textContent = '-';
+                }
+
+                // Cargar resumen de stock inmovilizado
+                loadImmobilizedSummary();
+            } catch (error) {
+                console.error('Error cargando resumen:', error);
+            }
+        }
+
+        // Cargar estado de sincronizaciones
+        async function loadSyncStatus() {
+            try {
+                const response = await fetch('/api/sync-status');
+                const data = await response.json();
+
+                if (data.sync_status) {
+                    // Sync Stock
+                    const syncStock = data.sync_status.sync_stock;
+                    if (syncStock && syncStock.last_run_formatted && syncStock.last_run_formatted !== 'Nunca') {
+                        document.getElementById('syncStockTime').textContent = syncStock.last_run_formatted;
+                    } else {
+                        document.getElementById('syncStockTime').textContent = 'Nunca';
+                    }
+
+                    // Sync Ventas
+                    const syncVentas = data.sync_status.sync_ventas;
+                    if (syncVentas && syncVentas.last_run_formatted && syncVentas.last_run_formatted !== 'Nunca') {
+                        document.getElementById('syncVentasTime').textContent = syncVentas.last_run_formatted;
+                    } else {
+                        document.getElementById('syncVentasTime').textContent = 'Nunca';
+                    }
+
+                    // Calculo Stock Ideal (min/max)
+                    const stockIdeal = data.sync_status.stock_ideal;
+                    if (stockIdeal && stockIdeal.last_run_formatted && stockIdeal.last_run_formatted !== 'Nunca') {
+                        document.getElementById('syncStockIdealTime').textContent = stockIdeal.last_run_formatted;
+                    } else {
+                        document.getElementById('syncStockIdealTime').textContent = 'Nunca';
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando estado de sincronizaciones:', error);
+            }
+        }
+
+        // Cargar resumen de stock inmovilizado
+        async function loadImmobilizedSummary() {
+            try {
+                const response = await fetch('/api/stock/immobilized-summary');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    const valorFormateado = data.summary.valor_total.toLocaleString('es-AR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                    document.getElementById('inmovilizadoCount').textContent = data.summary.total_productos + ' productos';
+                    document.getElementById('valorInmovilizado').textContent = valorFormateado;
+                    // Actualizar tambien la tarjeta del resumen general
+                    document.getElementById('statValorInmovilizado').textContent = '$' + valorFormateado;
+                } else {
+                    document.getElementById('inmovilizadoCount').textContent = '0 productos';
+                    document.getElementById('valorInmovilizado').textContent = '0';
+                    document.getElementById('statValorInmovilizado').textContent = '$0';
+                }
+            } catch (error) {
+                console.error('Error cargando resumen inmovilizado:', error);
+            }
+        }
+
+        // Obtener nivel objetivo seleccionado
+        function getTargetLevel() {
+            const selected = document.querySelector('input[name="targetLevel"]:checked');
+            return selected ? selected.value : 'ideal';
+        }
+
+        // Sincronizar stock desde DUX
+        async function syncStock() {
+            const btn = document.getElementById('btnSyncStock');
+            const loading = document.getElementById('loadingSync');
+            const loadingText = document.getElementById('loadingSyncText');
+            const message = document.getElementById('messageSync');
+
+            btn.disabled = true;
+            loadingText.textContent = 'Sincronizando stock desde DUX... Esto puede tomar unos minutos.';
+            loading.classList.add('active');
+            message.classList.remove('active', 'success', 'error');
+
+            try {
+                const response = await fetch('/api/sync/stock', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    message.textContent = `Stock actualizado: ${data.stats.products_processed} productos procesados, ${data.stats.stock_records_updated} registros actualizados.`;
+                    message.classList.add('active', 'success');
+                    // Actualizar resumen con datos frescos
+                    loadSummary();
+                } else {
+                    throw new Error(data.detail || 'Error desconocido');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            } finally {
+                btn.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        // Sincronizar ventas desde DUX
+        async function syncVentas() {
+            const btn = document.getElementById('btnSyncVentas');
+            const loading = document.getElementById('loadingSync');
+            const loadingText = document.getElementById('loadingSyncText');
+            const message = document.getElementById('messageSync');
+
+            btn.disabled = true;
+            loadingText.textContent = 'Sincronizando ventas desde DUX... Esto puede tomar varios minutos.';
+            loading.classList.add('active');
+            message.classList.remove('active', 'success', 'error');
+
+            try {
+                const response = await fetch('/api/sync/ventas?dias=30', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    message.textContent = `Ventas sincronizadas: ${data.stats.ventas_processed} facturas procesadas, ${data.stats.records_inserted} registros nuevos, ${data.stats.records_updated} actualizados.`;
+                    message.classList.add('active', 'success');
+                    loadSummary();
+                } else {
+                    throw new Error(data.detail || 'Error desconocido');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            } finally {
+                btn.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        // Recalcular niveles de stock min/ideal/max
+        async function recalculateStock() {
+            const btn = document.getElementById('btnRecalcStock');
+            const loading = document.getElementById('loadingSync');
+            const loadingText = document.getElementById('loadingSyncText');
+            const message = document.getElementById('messageSync');
+
+            btn.disabled = true;
+            loadingText.textContent = 'Recalculando niveles de stock...';
+            loading.classList.add('active');
+            message.classList.remove('active', 'success', 'error');
+
+            try {
+                const response = await fetch('/api/sync/recalculate-stock', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    message.textContent = `Niveles recalculados: ${data.total_registros} registros producto-deposito procesados.`;
+                    message.classList.add('active', 'success');
+                    loadSummary();
+                } else {
+                    throw new Error(data.detail || 'Error desconocido');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            } finally {
+                btn.disabled = false;
+                loading.classList.remove('active');
+            }
+        }
+
+        // Exportar distribucion (SIN sincronizacion de stock)
+        async function exportDistribution() {
+            const targetLevel = getTargetLevel();
+            await downloadFileWithSync(
+                `/api/export/distribution?target_level=${targetLevel}&sync_stock=false`,
+                'Generando propuesta de reparto central...'
+            );
+        }
+
+        // Exportar compras (SIN sincronizacion de stock)
+        async function exportPurchases() {
+            const targetLevel = getTargetLevel();
+            await downloadFileWithSync(
+                `/api/export/purchases?target_level=${targetLevel}&sync_stock=false`,
+                'Generando propuesta de compra...'
+            );
+        }
+
+        // Exportar referencias de stock
+        async function exportStockReferences() {
+            await downloadFile('/api/export/stock-references');
+        }
+
+        // Exportar detalle de calculo
+        async function exportCalculationDetail() {
+            await downloadFile('/api/export/calculation-detail');
+        }
+
+        // Exportar TOP 200
+        async function exportTop200() {
+            await downloadFile('/api/export/top200-below-minimum');
+        }
+
+        // Exportar stock negativo
+        async function exportNegativeStock() {
+            await downloadFile('/api/export/negative-stock');
+        }
+
+        // Exportar redistribucion de excedentes
+        async function exportExcessRedistribution() {
+            const targetLevel = getTargetLevel();
+            await downloadFileWithSync(
+                `/api/export/excess-redistribution?target_level=${targetLevel}&sync_stock=false`,
+                'Generando propuesta de redistribucion de excedentes...'
+            );
+        }
+
+        // Exportar stock inmovilizado
+        async function exportImmobilizedStock() {
+            await downloadFileWithSync(
+                '/api/export/immobilized-stock?sync_stock=false',
+                'Generando reporte de stock inmovilizado...'
+            );
+        }
+
+        // Funcion generica para descargar archivos (sin sync)
+        async function downloadFile(url) {
+            await downloadFileWithSync(url, 'Generando archivo Excel...');
+        }
+
+        // Funcion para descargar archivos con sincronizacion (mensaje personalizado)
+        async function downloadFileWithSync(url, loadingMessage) {
+            const loading = document.getElementById('loadingExport');
+            const loadingText = document.getElementById('loadingExportText');
+            const message = document.getElementById('messageExport');
+
+            loading.classList.add('active');
+            loadingText.textContent = loadingMessage;
+            message.classList.remove('active', 'success', 'error');
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Error al generar el archivo');
+                }
+
+                const contentDisposition = response.headers.get('content-disposition');
+                let filename = 'export.xlsx';
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (match) {
+                        filename = match[1].replace(/['"]/g, '');
+                    }
+                }
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(downloadUrl);
+
+                message.textContent = 'Archivo descargado: ' + filename;
+                message.classList.add('active', 'success');
+
+                // Actualizar el resumen despues de generar (ya que el stock se actualizo)
+                loadSummary();
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

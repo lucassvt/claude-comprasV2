@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuracion - Sistema de Compras</title>
+    <link rel="icon" type="image/png" href="/imagenes/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0066CC;
+            --primary-dark: #004C99;
+            --primary-light: #3399FF;
+            --accent-orange: #FF6B35;
+            --bg-light: #F8FAFC;
+            --bg-white: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-gray: #64748B;
+            --text-light: #94A3B8;
+            --border-color: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            height: 60px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text .subtitle {
+            font-size: 0.75em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        nav {
+            display: flex;
+            gap: 5px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        nav a svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            flex: 1;
+        }
+
+        .section {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9em;
+        }
+
+        .form-group input[type="number"],
+        .form-group select {
+            width: 100%;
+            max-width: 220px;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="number"]:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #DC2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--text-gray), #475569);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85em;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Add Row */
+        .add-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .add-row .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Checkbox List */
+        .checkbox-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-item:hover {
+            background: #f8fafc;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: var(--primary-blue);
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        /* Columns */
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .columns h4 {
+            margin-bottom: 12px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            nav {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--text-dark), #0f172a);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .footer-main img {
+            height: 40px;
+        }
+
+        .footer-text {
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .footer-developer {
+            font-size: 0.85em;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        .footer-quote {
+            margin-top: 20px;
+            font-size: 0.9em;
+            font-style: italic;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6, #60a5fa);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease infinite;
+            font-weight: 500;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .description {
+            font-size: 0.9em;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="/imagenes/logo%20La%20Mascotera%20(1).png" alt="La Mascotera">
+                <div class="logo-text">
+                    <h1>CONFIGURACION</h1>
+                    <span class="subtitle">Sistema de Compras v2.0</span>
+                </div>
+            </div>
+            <nav>
+                <a href="/">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/config" class="active">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Configuracion
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Parametros Globales -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                </svg>
+                Parametros de Calculo
+            </h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="diasStockDefault">Dias de stock minimo (por defecto)</label>
+                    <input type="number" id="diasStockDefault" min="1" max="365" value="30">
+                </div>
+                <div class="form-group">
+                    <label for="factorIdeal">Factor stock ideal (x minimo)</label>
+                    <input type="number" id="factorIdeal" min="1" max="10" step="0.1" value="2.0">
+                </div>
+                <div class="form-group">
+                    <label for="factorMaximo">Factor stock maximo (x minimo)</label>
+                    <input type="number" id="factorMaximo" min="1" max="20" step="0.1" value="4.0">
+                </div>
+                <div class="form-group">
+                    <label for="periodoVentas">Periodo de ventas (dias)</label>
+                    <input type="number" id="periodoVentas" min="30" max="730" value="365">
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="saveGlobalParams()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Guardar Parametros
+            </button>
+            <div class="message" id="messageGlobal"></div>
+        </section>
+
+        <!-- Configuracion por Rubro -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                Configuracion por Rubro/Subrubro
+            </h2>
+            <p class="description">
+                Defina dias de stock especificos para cada rubro. Si no se configura, se usa el valor por defecto.
+            </p>
+
+            <table id="tableRubro">
+                <thead>
+                    <tr>
+                        <th>Rubro</th>
+                        <th>Dias de Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="rubroTableBody">
+                </tbody>
+            </table>
+
+            <div class="add-row">
+                <div class="form-group">
+                    <label for="newRubro">Rubro</label>
+                    <select id="newRubro">
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newRubroDias">Dias de Stock</label>
+                    <input type="number" id="newRubroDias" min="1" max="365" value="30">
+                </div>
+                <button class="btn btn-primary" onclick="addRubroConfig()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Agregar Rubro
+                </button>
+            </div>
+            <div class="message" id="messageRubro"></div>
+        </section>
+
+        <!-- Configuracion por Marca -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Configuracion por Marca (prioridad sobre Rubro)
+            </h2>
+            <p class="description">
+                La configuracion por marca tiene prioridad sobre el rubro. Use esto para marcas especiales.
+            </p>
+
+            <table id="tableMarca">
+                <thead>
+                    <tr>
+                        <th>Marca</th>
+                        <th>Dias de Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="marcaTableBody">
+                </tbody>
+            </table>
+
+            <div class="add-row">
+                <div class="form-group">
+                    <label for="newMarca">Marca</label>
+                    <select id="newMarca">
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newMarcaDias">Dias de Stock</label>
+                    <input type="number" id="newMarcaDias" min="1" max="365" value="30">
+                </div>
+                <button class="btn btn-primary" onclick="addMarcaConfig()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Agregar Marca
+                </button>
+            </div>
+            <div class="message" id="messageMarca"></div>
+        </section>
+
+        <!-- Umbral Minimo por Sub-Rubro -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                Umbral Minimo de Ventas por Sub-Rubro
+            </h2>
+            <p class="description">
+                Define las ventas minimas (en el periodo de 365 dias) que debe tener un producto
+                para que el sistema le calcule stock minimo/ideal/maximo.
+                <br><br>
+                <strong>Umbral Default:</strong> <span id="defaultThreshold" style="color: var(--primary); font-weight: bold;">5</span> ventas
+                <br>
+                <small>Productos con menos ventas que el umbral tendran stock min/ideal/max = 0 (sin reposicion automatica)</small>
+            </p>
+
+            <table id="tableUmbral">
+                <thead>
+                    <tr>
+                        <th>Sub-Rubro</th>
+                        <th>Umbral Minimo (ventas)</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="umbralTableBody">
+                </tbody>
+            </table>
+
+            <div class="add-row">
+                <div class="form-group">
+                    <label for="newSubrubro">Sub-Rubro</label>
+                    <select id="newSubrubro">
+                        <option value="">Seleccione...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newUmbral">Umbral (ventas)</label>
+                    <input type="number" id="newUmbral" min="1" max="100" value="5">
+                </div>
+                <button class="btn btn-primary" onclick="addSubrubroThreshold()">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                    </svg>
+                    Agregar Umbral
+                </button>
+            </div>
+            <div class="message" id="messageUmbral"></div>
+        </section>
+
+        <!-- Metodo de Calculo de Demanda -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Metodo de Calculo de Demanda
+            </h2>
+            <p class="description">
+                Define como se calcula la demanda diaria de cada producto para determinar los niveles de stock.
+                <br><br>
+                <strong>Metodo actual:</strong> <span id="currentDemandMethod" style="color: var(--primary); font-weight: bold;">Cargando...</span>
+            </p>
+
+            <div class="method-selector" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="demandMethod" value="mediana" style="margin-top: 4px;">
+                    <div>
+                        <strong style="color: var(--success);">Mediana Ajustada (Recomendado)</strong>
+                        <p style="margin: 5px 0 0 0; font-size: 13px; color: #888;">
+                            Usa la mediana de ventas diarias ajustada por proporcion de dias con ventas.
+                            <br><strong>Robusto a picos y outliers.</strong> Ideal para productos con ventas irregulares.
+                        </p>
+                    </div>
+                </label>
+
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="demandMethod" value="promedio_simple" style="margin-top: 4px;">
+                    <div>
+                        <strong>Promedio Simple</strong>
+                        <p style="margin: 5px 0 0 0; font-size: 13px; color: #888;">
+                            Calcula ventas_totales / dias_periodo.
+                            <br>Sensible a picos de ventas atipicos (un dia con muchas ventas distorsiona el calculo).
+                        </p>
+                    </div>
+                </label>
+
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="demandMethod" value="combinado" style="margin-top: 4px;">
+                    <div>
+                        <strong>Combinado (ML + Movil)</strong>
+                        <p style="margin: 5px 0 0 0; font-size: 13px; color: #888;">
+                            Combina promedio movil ponderado y Machine Learning con deteccion de tendencia.
+                            <br>Requiere mas datos historicos para funcionar correctamente.
+                        </p>
+                    </div>
+                </label>
+            </div>
+
+            <button class="btn btn-primary" onclick="saveDemandMethod()" style="margin-top: 20px;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Guardar Metodo de Calculo
+            </button>
+            <div class="message" id="messageDemandMethod"></div>
+
+            <p class="description" style="margin-top: 20px; padding: 10px; background: rgba(255,193,7,0.1); border-radius: 5px;">
+                <strong>Nota:</strong> El cambio de metodo se aplica en el proximo recalculo de stock.
+                Para ver los cambios, ejecute "Recalcular Stock" desde el Dashboard.
+            </p>
+        </section>
+
+        <!-- Exclusiones -->
+        <section class="section">
+            <h2 class="section-title">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                </svg>
+                Exclusiones
+            </h2>
+            <p class="description">
+                Seleccione los depositos y marcas que desea excluir del analisis y las propuestas.
+            </p>
+
+            <div class="columns">
+                <div>
+                    <h4>Depositos Excluidos</h4>
+                    <div class="checkbox-list" id="depositsList">
+                    </div>
+                </div>
+                <div>
+                    <h4>Marcas Excluidas</h4>
+                    <div class="checkbox-list" id="brandsList">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="saveExclusions()" style="margin-top: 20px;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Guardar Exclusiones
+            </button>
+            <div class="message" id="messageExclusions"></div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-main">
+                <img src="/imagenes/corazon%20azul.png" alt="Corazon La Mascotera">
+                <span class="footer-text">LA MASCOTERA SAS</span>
+            </div>
+            <div class="footer-developer">
+                Desarrollado por Lucas Salvatierra Software
+            </div>
+            <div class="footer-quote">
+                "Ad astra per aspera"
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Cargar configuracion al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+        });
+
+        // Cargar toda la configuracion
+        async function loadConfig() {
+            try {
+                const response = await fetch('/api/config');
+                const data = await response.json();
+
+                // Parametros globales
+                document.getElementById('diasStockDefault').value = data.global_params.dias_stock_default;
+                document.getElementById('factorIdeal').value = data.global_params.factor_ideal;
+                document.getElementById('factorMaximo').value = data.global_params.factor_maximo;
+                document.getElementById('periodoVentas').value = data.global_params.periodo_ventas_dias;
+
+                // Configuraciones de rubro
+                loadRubroTable(data.rubro_configs);
+
+                // Configuraciones de marca
+                loadMarcaTable(data.marca_configs);
+
+                // Listas disponibles para selects
+                loadSelectOptions('newRubro', data.available_rubros);
+                loadSelectOptions('newMarca', data.available_brands);
+
+                // Umbrales por sub-rubro
+                document.getElementById('defaultThreshold').textContent = data.default_threshold || 5;
+                loadUmbralTable(data.subrubro_thresholds);
+                loadSelectOptions('newSubrubro', data.available_subrubros);
+
+                // Listas de exclusion
+                loadDepositCheckboxes(data.available_deposits, data.excluded_deposits);
+                loadBrandCheckboxes(data.available_brands, data.excluded_brands);
+
+                // Metodo de calculo de demanda
+                loadDemandMethod();
+
+            } catch (error) {
+                console.error('Error cargando configuracion:', error);
+            }
+        }
+
+        // Cargar tabla de rubros
+        function loadRubroTable(configs) {
+            const tbody = document.getElementById('rubroTableBody');
+            tbody.innerHTML = '';
+
+            configs.forEach(config => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${config.rubro}</td>
+                    <td>${config.dias_stock}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRubroConfig('${config.rubro}')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (configs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay configuraciones de rubro</td></tr>';
+            }
+        }
+
+        // Cargar tabla de marcas
+        function loadMarcaTable(configs) {
+            const tbody = document.getElementById('marcaTableBody');
+            tbody.innerHTML = '';
+
+            configs.forEach(config => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${config.marca}</td>
+                    <td>${config.dias_stock}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteMarcaConfig('${config.marca}')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (configs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay configuraciones de marca</td></tr>';
+            }
+        }
+
+        // Cargar tabla de umbrales por sub-rubro
+        function loadUmbralTable(thresholds) {
+            const tbody = document.getElementById('umbralTableBody');
+            tbody.innerHTML = '';
+
+            if (!thresholds || Object.keys(thresholds).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay umbrales personalizados (todos usan default)</td></tr>';
+                return;
+            }
+
+            for (const [subrubro, umbral] of Object.entries(thresholds)) {
+                const tr = document.createElement('tr');
+                const safeSubrubro = subrubro.replace(/'/g, "\\'");
+                tr.innerHTML = `
+                    <td>${subrubro}</td>
+                    <td>${umbral} ventas</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSubrubroThreshold('${safeSubrubro}')">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Eliminar
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        // Agregar umbral por sub-rubro
+        async function addSubrubroThreshold() {
+            const message = document.getElementById('messageUmbral');
+            message.classList.remove('active', 'success', 'error');
+
+            const subrubro = document.getElementById('newSubrubro').value;
+            const umbral = parseInt(document.getElementById('newUmbral').value);
+
+            if (!subrubro) {
+                message.textContent = 'Seleccione un sub-rubro';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            if (!umbral || umbral < 1 || umbral > 100) {
+                message.textContent = 'El umbral debe estar entre 1 y 100';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/subrubro-threshold', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subrubro, umbral })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Umbral guardado correctamente';
+                    message.classList.add('active', 'success');
+                    loadConfig();
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Eliminar umbral de sub-rubro
+        async function deleteSubrubroThreshold(subrubro) {
+            try {
+                const response = await fetch(`/api/config/subrubro-threshold/${encodeURIComponent(subrubro)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadConfig();
+                }
+            } catch (error) {
+                console.error('Error eliminando umbral:', error);
+            }
+        }
+
+        // Cargar metodo de calculo de demanda
+        async function loadDemandMethod() {
+            try {
+                const response = await fetch('/api/config/demand-method');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    const metodo = data.metodo_actual;
+
+                    // Actualizar texto del metodo actual
+                    const nombres = {
+                        'promedio_simple': 'Promedio Simple',
+                        'mediana': 'Mediana Ajustada',
+                        'combinado': 'Combinado (ML + Movil)'
+                    };
+                    document.getElementById('currentDemandMethod').textContent = nombres[metodo] || metodo;
+
+                    // Seleccionar el radio button correspondiente
+                    const radio = document.querySelector(`input[name="demandMethod"][value="${metodo}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando metodo de demanda:', error);
+            }
+        }
+
+        // Guardar metodo de calculo de demanda
+        async function saveDemandMethod() {
+            const message = document.getElementById('messageDemandMethod');
+            message.classList.remove('active', 'success', 'error');
+
+            const selectedRadio = document.querySelector('input[name="demandMethod"]:checked');
+            if (!selectedRadio) {
+                message.textContent = 'Seleccione un metodo de calculo';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            const metodo = selectedRadio.value;
+
+            try {
+                const response = await fetch('/api/config/demand-method', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ metodo })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    message.textContent = data.message || 'Metodo guardado correctamente';
+                    message.classList.add('active', 'success');
+                    loadDemandMethod();
+                } else {
+                    throw new Error(data.detail || 'Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Cargar opciones en select
+        function loadSelectOptions(selectId, options) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Seleccione...</option>';
+
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                select.appendChild(option);
+            });
+        }
+
+        // Cargar checkboxes de depositos
+        function loadDepositCheckboxes(deposits, excluded) {
+            const container = document.getElementById('depositsList');
+            container.innerHTML = '';
+
+            deposits.forEach(dep => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                const isExcluded = excluded.includes(dep.nombre);
+                div.innerHTML = `
+                    <input type="checkbox" id="dep_${dep.id}" value="${dep.nombre}"
+                        ${isExcluded ? 'checked' : ''}>
+                    <label for="dep_${dep.id}">${dep.nombre} ${dep.es_central ? '(Central)' : ''}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Cargar checkboxes de marcas
+        function loadBrandCheckboxes(brands, excluded) {
+            const container = document.getElementById('brandsList');
+            container.innerHTML = '';
+
+            brands.forEach(brand => {
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                const isExcluded = excluded.includes(brand);
+                const safeBrand = brand.replace(/'/g, "\\'");
+                div.innerHTML = `
+                    <input type="checkbox" id="brand_${brand}" value="${safeBrand}"
+                        ${isExcluded ? 'checked' : ''}>
+                    <label for="brand_${brand}">${brand}</label>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Guardar parametros globales
+        async function saveGlobalParams() {
+            const message = document.getElementById('messageGlobal');
+            message.classList.remove('active', 'success', 'error');
+
+            const params = {
+                dias_stock_default: parseInt(document.getElementById('diasStockDefault').value),
+                factor_ideal: parseFloat(document.getElementById('factorIdeal').value),
+                factor_maximo: parseFloat(document.getElementById('factorMaximo').value),
+                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value)
+            };
+
+            try {
+                const response = await fetch('/api/config/global-params', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params)
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Parametros guardados correctamente';
+                    message.classList.add('active', 'success');
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Agregar configuracion de rubro
+        async function addRubroConfig() {
+            const message = document.getElementById('messageRubro');
+            message.classList.remove('active', 'success', 'error');
+
+            const rubro = document.getElementById('newRubro').value;
+            const dias = parseInt(document.getElementById('newRubroDias').value);
+
+            if (!rubro) {
+                message.textContent = 'Seleccione un rubro';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/rubro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rubro, dias_stock: dias })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Configuracion agregada';
+                    message.classList.add('active', 'success');
+                    loadConfig();
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Eliminar configuracion de rubro
+        async function deleteRubroConfig(rubro) {
+            if (!confirm(`Eliminar configuracion de "${rubro}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/config/rubro/${encodeURIComponent(rubro)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadConfig();
+                }
+            } catch (error) {
+                alert('Error al eliminar');
+            }
+        }
+
+        // Agregar configuracion de marca
+        async function addMarcaConfig() {
+            const message = document.getElementById('messageMarca');
+            message.classList.remove('active', 'success', 'error');
+
+            const marca = document.getElementById('newMarca').value;
+            const dias = parseInt(document.getElementById('newMarcaDias').value);
+
+            if (!marca) {
+                message.textContent = 'Seleccione una marca';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/marca', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ marca, dias_stock: dias })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Configuracion agregada';
+                    message.classList.add('active', 'success');
+                    loadConfig();
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Eliminar configuracion de marca
+        async function deleteMarcaConfig(marca) {
+            if (!confirm(`Eliminar configuracion de "${marca}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/config/marca/${encodeURIComponent(marca)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadConfig();
+                }
+            } catch (error) {
+                alert('Error al eliminar');
+            }
+        }
+
+        // Guardar exclusiones
+        async function saveExclusions() {
+            const message = document.getElementById('messageExclusions');
+            message.classList.remove('active', 'success', 'error');
+
+            const depositCheckboxes = document.querySelectorAll('#depositsList input[type="checkbox"]:checked');
+            const excluded_deposits = Array.from(depositCheckboxes).map(cb => cb.value);
+
+            const brandCheckboxes = document.querySelectorAll('#brandsList input[type="checkbox"]:checked');
+            const excluded_brands = Array.from(brandCheckboxes).map(cb => cb.value);
+
+            try {
+                const response = await fetch('/api/config/exclusions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ excluded_deposits, excluded_brands })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Exclusiones guardadas correctamente';
+                    message.classList.add('active', 'success');
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
