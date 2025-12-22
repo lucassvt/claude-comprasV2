@@ -56,8 +56,8 @@ class DuxSyncService:
         self.client = DuxAPIClient(
             base_url=settings.dux_api_base_url,
             token=settings.dux_api_token,
-            requests_per_minute=6,     # 1 cada 10 segundos = 6 por minuto (más conservador)
-            requests_per_second=0.1,   # 1 cada 10 segundos
+            requests_per_minute=20,    # ~1 cada 3 segundos
+            requests_per_second=0.33,  # 1 cada 3 segundos (balance velocidad/estabilidad)
             max_retries=10             # Más reintentos antes de fallar
         )
 
