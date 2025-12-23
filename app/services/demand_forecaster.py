@@ -137,7 +137,9 @@ class DemandForecaster:
         monto_90 = df[df['fecha'] >= (fecha_fin - timedelta(days=90))]['monto'].sum()
 
         # Calcular demanda con cada método
-        dias_con_datos = (fecha_fin - df['fecha'].min()).days + 1
+        # IMPORTANTE: usar days_back como período total, NO la diferencia entre ventas
+        # Si solo hay 1 venta en 180 días, debemos dividir por 180, no por 1
+        dias_con_datos = min(days_back, (datetime.now() - fecha_inicio).days + 1)
 
         # 1. Promedio Simple
         demanda_simple = self._promedio_simple(df, dias_con_datos)
