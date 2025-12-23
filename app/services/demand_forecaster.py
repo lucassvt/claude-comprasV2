@@ -150,8 +150,8 @@ class DemandForecaster:
         # 3. Promedio Móvil Ponderado
         demanda_movil = self._promedio_movil_ponderado(df, fecha_fin)
 
-        # 4. ML con Tendencia
-        demanda_ml, tendencia, confianza_ml = self._ml_tendencia(df, fecha_fin)
+        # 4. ML con Tendencia (pasamos dias_con_datos para el fallback)
+        demanda_ml, tendencia, confianza_ml = self._ml_tendencia(df, fecha_fin, dias_con_datos)
 
         # Seleccionar el mejor método según configuración
         demanda_final, metodo, confianza = self._seleccionar_mejor_metodo(
@@ -262,10 +262,16 @@ class DemandForecaster:
     def _ml_tendencia(
         self,
         df: pd.DataFrame,
-        fecha_fin: datetime
+        fecha_fin: datetime,
+        dias_periodo: int = 180
     ) -> Tuple[float, str, float]:
         """
         Usa regresión lineal para detectar tendencia y proyectar demanda.
+
+        Args:
+            df: DataFrame con ventas
+            fecha_fin: Fecha final del período
+            dias_periodo: Días totales del período (para fallback cuando no hay suficientes datos)
 
         Returns:
             (demanda_proyectada, tendencia, confianza)
@@ -277,10 +283,9 @@ class DemandForecaster:
 
         if len(df_diario) < self.min_days_for_ml:
             # No hay suficientes datos para ML
-            # Calcular promedio simple: total vendido / días del período
-            # NO usar mean() de cantidades porque eso da el promedio por día CON ventas
+            # Calcular promedio simple: total vendido / días del período completo
+            # IMPORTANTE: usar dias_periodo (el período real), NO la diferencia entre ventas
             total_vendido = df_diario['cantidad'].sum()
-            dias_periodo = (df_diario['fecha'].max() - df_diario['fecha'].min()).days + 1
             promedio = total_vendido / max(1, dias_periodo)
             return float(promedio), 'estable', 0.3
 
