@@ -483,6 +483,9 @@ class StockCalculator:
         """
         Obtiene los TOP 200 productos por MONTO de ventas (importe $)
         que están bajo el stock mínimo.
+
+        IMPORTANTE: Solo incluye productos con stock_minimo > 0
+        (si stock_minimo = 0 significa que ese depósito no requiere stock de ese producto)
         """
         # Ordenar por monto de ventas (importe en pesos, no cantidad)
         sorted_levels = sorted(
@@ -494,8 +497,12 @@ class StockCalculator:
         # Tomar los primeros 200
         top_200 = sorted_levels[:200]
 
-        # Filtrar los que están bajo mínimo
-        bajo_minimo = [s for s in top_200 if s.estado in ('bajo_minimo', 'sin_stock')]
+        # Filtrar los que están bajo mínimo Y tienen stock_minimo > 0
+        # (excluir productos cuyo stock_minimo = 0, que no requieren reposición)
+        bajo_minimo = [
+            s for s in top_200
+            if s.estado in ('bajo_minimo', 'sin_stock') and s.stock_minimo > 0
+        ]
 
         return bajo_minimo
 
