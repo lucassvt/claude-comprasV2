@@ -257,8 +257,9 @@ async def get_stock_summary(db: Session = Depends(get_db)):
     calculator = StockCalculator(db)
     summary = calculator.get_summary(stock_levels_cache)
 
-    # Agregar TOP 200 bajo mínimo
+    # Agregar TOP 200 bajo mínimo (contar SKUs únicos, no registros producto-depósito)
     top_200 = calculator.get_top_200_products(stock_levels_cache)
+    skus_top_bajo_minimo = len(set(s.product_id for s in top_200))
 
     # Obtener resumen extendido con valor del stock y SKUs
     extended = calculator.get_extended_summary(stock_levels_cache)
@@ -267,7 +268,7 @@ async def get_stock_summary(db: Session = Depends(get_db)):
         "status": "ok",
         "summary": summary,
         "extended": extended,
-        "top_200_bajo_minimo": len(top_200),
+        "top_200_bajo_minimo": skus_top_bajo_minimo,  # SKUs únicos, no registros
         "negativos": len(calculator.get_negative_stock(stock_levels_cache))
     }
 
