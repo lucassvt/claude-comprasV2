@@ -516,14 +516,15 @@ class StockCalculator:
 
         # 4. Retornar todos los registros producto-depósito que:
         #    - Pertenecen al TOP 200
-        #    - Están bajo mínimo
-        #    - Tienen stock_minimo > 0
-        bajo_minimo = [
-            sl for sl in stock_levels
-            if sl.product_id in top_200_ids
-            and sl.estado in ('bajo_minimo', 'sin_stock')
-            and sl.stock_minimo > 0
-        ]
+        #    - Tienen faltante > 0 (usando valores redondeados para consistencia con Excel)
+        bajo_minimo = []
+        for sl in stock_levels:
+            if sl.product_id in top_200_ids and sl.stock_minimo > 0:
+                stock_min_redondeado = max(1, int(round(sl.stock_minimo)))
+                stock_actual_redondeado = int(round(sl.stock_actual))
+                faltante = stock_min_redondeado - stock_actual_redondeado
+                if faltante > 0:
+                    bajo_minimo.append(sl)
 
         return bajo_minimo
 
