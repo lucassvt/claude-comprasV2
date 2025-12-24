@@ -482,26 +482,47 @@ class StockCalculator:
     def get_top_200_products(self, stock_levels: List[StockLevel]) -> List[StockLevel]:
         """
         Obtiene los TOP 200 productos por MONTO de ventas (importe $)
-        que están bajo el stock mínimo.
+        que están bajo el stock mínimo en al menos un depósito.
 
-        IMPORTANTE: Solo incluye productos con stock_minimo > 0
+        Lógica:
+        1. Agrupa por producto único (suma montos de todos los depósitos)
+        2. Ordena por monto total del producto
+        3. Toma TOP 200 productos únicos
+        4. Retorna todos los registros producto-depósito que están bajo mínimo
+
+        IMPORTANTE: Solo incluye depósitos con stock_minimo > 0
         (si stock_minimo = 0 significa que ese depósito no requiere stock de ese producto)
         """
-        # Ordenar por monto de ventas (importe en pesos, no cantidad)
-        sorted_levels = sorted(
-            stock_levels,
-            key=lambda x: x.monto_90_dias,
+        # 1. Agrupar por producto para calcular monto total
+        product_totals = {}
+        for sl in stock_levels:
+            if sl.product_id not in product_totals:
+                product_totals[sl.product_id] = {
+                    'monto_total': 0,
+                    'registros': []
+                }
+            product_totals[sl.product_id]['monto_total'] += sl.monto_90_dias
+            product_totals[sl.product_id]['registros'].append(sl)
+
+        # 2. Ordenar productos por monto total y tomar TOP 200
+        sorted_products = sorted(
+            product_totals.items(),
+            key=lambda x: x[1]['monto_total'],
             reverse=True
-        )
+        )[:200]
 
-        # Tomar los primeros 200
-        top_200 = sorted_levels[:200]
+        # 3. Obtener los product_ids del TOP 200
+        top_200_ids = set(pid for pid, _ in sorted_products)
 
-        # Filtrar los que están bajo mínimo Y tienen stock_minimo > 0
-        # (excluir productos cuyo stock_minimo = 0, que no requieren reposición)
+        # 4. Retornar todos los registros producto-depósito que:
+        #    - Pertenecen al TOP 200
+        #    - Están bajo mínimo
+        #    - Tienen stock_minimo > 0
         bajo_minimo = [
-            s for s in top_200
-            if s.estado in ('bajo_minimo', 'sin_stock') and s.stock_minimo > 0
+            sl for sl in stock_levels
+            if sl.product_id in top_200_ids
+            and sl.estado in ('bajo_minimo', 'sin_stock')
+            and sl.stock_minimo > 0
         ]
 
         return bajo_minimo
