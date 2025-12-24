@@ -436,16 +436,18 @@ class PurchaseService:
                 ranking += 1
                 if info['depositos_bajo_minimo']:
                     for dep in info['depositos_bajo_minimo']:
-                        data.append({
-                            'Ranking': ranking,
-                            'Código': info['cod_item'],
-                            'Producto': info['producto'],
-                            'Depósito': dep['deposito'],
-                            'Stock Actual': int(round(dep['stock_actual'])),
-                            'Stock Mínimo': int(round(dep['stock_minimo'])),
-                            'Faltante': int(round(dep['faltante'])),
-                            'Marca': info['marca']
-                        })
+                        # Filtro adicional: solo incluir si stock_minimo > 0
+                        if dep['stock_minimo'] > 0:
+                            data.append({
+                                'Ranking': ranking,
+                                'Código': info['cod_item'],
+                                'Producto': info['producto'],
+                                'Depósito': dep['deposito'],
+                                'Stock Actual': int(round(dep['stock_actual'])),
+                                'Stock Mínimo': int(round(dep['stock_minimo'])),
+                                'Faltante': int(round(dep['faltante'])),
+                                'Marca': info['marca']
+                            })
 
             if data:
                 df = pd.DataFrame(data)
