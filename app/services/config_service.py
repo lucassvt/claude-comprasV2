@@ -454,6 +454,206 @@ class ConfigService:
             self.db.rollback()
             return False
 
+    # ==================== UMBRALES POR MARCA Y RUBRO ====================
+
+    def get_all_thresholds(self) -> Dict:
+        """
+        Obtiene todos los umbrales configurados (marca, rubro, subrubro).
+
+        Returns:
+            Dict con estructura:
+            {
+                'marca': {'MARCA1': umbral, ...},
+                'rubro': {'RUBRO1': umbral, ...},
+                'subrubro': {'SUBRUBRO1': umbral, ...}
+            }
+        """
+        thresholds = {'marca': {}, 'rubro': {}, 'subrubro': {}}
+
+        result = self.db.execute(text("""
+            SELECT key, value FROM system_config
+            WHERE key LIKE 'umbral_marca_%'
+               OR key LIKE 'umbral_rubro_%'
+               OR key LIKE 'umbral_subrubro_%'
+            ORDER BY key
+        """))
+
+        for row in result:
+            key = row[0]
+            try:
+                value = int(row[1])
+            except (ValueError, TypeError):
+                continue
+
+            if key.startswith('umbral_marca_'):
+                nombre = key.replace('umbral_marca_', '')
+                thresholds['marca'][nombre] = value
+            elif key.startswith('umbral_rubro_'):
+                nombre = key.replace('umbral_rubro_', '')
+                thresholds['rubro'][nombre] = value
+            elif key.startswith('umbral_subrubro_'):
+                nombre = key.replace('umbral_subrubro_', '')
+                thresholds['subrubro'][nombre] = value
+
+        return thresholds
+
+    def save_threshold(self, tipo: str, nombre: str, umbral: int) -> bool:
+        """
+        Guarda umbral mínimo de ventas para marca, rubro o subrubro.
+
+        Args:
+            tipo: 'marca', 'rubro' o 'subrubro'
+            nombre: Nombre de la marca/rubro/subrubro
+            umbral: Ventas mínimas para calcular stock (1-1000)
+        """
+        if tipo not in ('marca', 'rubro', 'subrubro'):
+            return False
+
+        try:
+            key = f'umbral_{tipo}_{nombre.upper()}'
+            self.db.execute(text("""
+                INSERT INTO system_config (key, value, updated_at)
+                VALUES (:key, :value, NOW())
+                ON CONFLICT (key) DO UPDATE SET value = :value, updated_at = NOW()
+            """), {'key': key, 'value': str(umbral)})
+
+            self.db.commit()
+            logger.info(f"Umbral de {tipo} '{nombre}' guardado: {umbral} ventas")
+            return True
+        except Exception as e:
+            logger.error(f"Error guardando umbral {tipo}: {e}")
+            self.db.rollback()
+            return False
+
+    def delete_threshold(self, tipo: str, nombre: str) -> bool:
+        """Elimina configuración de umbral para marca, rubro o subrubro"""
+        if tipo not in ('marca', 'rubro', 'subrubro'):
+            return False
+
+        try:
+            key = f'umbral_{tipo}_{nombre.upper()}'
+            self.db.execute(text("DELETE FROM system_config WHERE key = :key"), {'key': key})
+            self.db.commit()
+            logger.info(f"Umbral de {tipo} '{nombre}' eliminado")
+            return True
+        except Exception as e:
+            logger.error(f"Error eliminando umbral {tipo}: {e}")
+            self.db.rollback()
+            return False
+
+    # ==================== PARÁMETROS POR MARCA/RUBRO/SUBRUBRO ====================
+
+    def get_all_category_params(self) -> Dict:
+        """
+        Obtiene todos los parámetros de cálculo por categoría.
+
+        Returns:
+            Dict con estructura:
+            {
+                'marca': {'MARCA1': {dias_stock, factor_ideal, factor_maximo}, ...},
+                'rubro': {'RUBRO1': {...}, ...},
+                'subrubro': {'SUBRUBRO1': {...}, ...}
+            }
+        """
+        params = {'marca': {}, 'rubro': {}, 'subrubro': {}}
+
+        result = self.db.execute(text("""
+            SELECT key, value FROM system_config
+            WHERE key LIKE 'params_marca_%'
+               OR key LIKE 'params_rubro_%'
+               OR key LIKE 'params_subrubro_%'
+            ORDER BY key
+        """))
+
+        for row in result:
+            key = row[0]
+            try:
+                # El valor es JSON
+                value = row[1]
+                if isinstance(value, str):
+                    value = json.loads(value)
+                elif isinstance(value, dict):
+                    pass  # Ya es dict (JSONB deserializado)
+                else:
+                    continue
+            except (json.JSONDecodeError, TypeError):
+                continue
+
+            if key.startswith('params_marca_'):
+                nombre = key.replace('params_marca_', '')
+                params['marca'][nombre] = value
+            elif key.startswith('params_rubro_'):
+                nombre = key.replace('params_rubro_', '')
+                params['rubro'][nombre] = value
+            elif key.startswith('params_subrubro_'):
+                nombre = key.replace('params_subrubro_', '')
+                params['subrubro'][nombre] = value
+
+        return params
+
+    def save_category_params(
+        self,
+        tipo: str,
+        nombre: str,
+        dias_stock: int,
+        factor_ideal: float = None,
+        factor_maximo: float = None
+    ) -> bool:
+        """
+        Guarda parámetros de cálculo para marca, rubro o subrubro.
+
+        Args:
+            tipo: 'marca', 'rubro' o 'subrubro'
+            nombre: Nombre de la categoría
+            dias_stock: Días de stock mínimo
+            factor_ideal: Factor para stock ideal (opcional, usa global si no se especifica)
+            factor_maximo: Factor para stock máximo (opcional, usa global si no se especifica)
+        """
+        if tipo not in ('marca', 'rubro', 'subrubro'):
+            return False
+
+        try:
+            key = f'params_{tipo}_{nombre.upper()}'
+
+            # Construir objeto de parámetros
+            params = {'dias_stock': dias_stock}
+            if factor_ideal is not None:
+                params['factor_ideal'] = factor_ideal
+            if factor_maximo is not None:
+                params['factor_maximo'] = factor_maximo
+
+            value = json.dumps(params)
+
+            self.db.execute(text("""
+                INSERT INTO system_config (key, value, updated_at)
+                VALUES (:key, :value, NOW())
+                ON CONFLICT (key) DO UPDATE SET value = :value, updated_at = NOW()
+            """), {'key': key, 'value': value})
+
+            self.db.commit()
+            logger.info(f"Parámetros de {tipo} '{nombre}' guardados: {params}")
+            return True
+        except Exception as e:
+            logger.error(f"Error guardando parámetros {tipo}: {e}")
+            self.db.rollback()
+            return False
+
+    def delete_category_params(self, tipo: str, nombre: str) -> bool:
+        """Elimina parámetros de cálculo para marca, rubro o subrubro"""
+        if tipo not in ('marca', 'rubro', 'subrubro'):
+            return False
+
+        try:
+            key = f'params_{tipo}_{nombre.upper()}'
+            self.db.execute(text("DELETE FROM system_config WHERE key = :key"), {'key': key})
+            self.db.commit()
+            logger.info(f"Parámetros de {tipo} '{nombre}' eliminados")
+            return True
+        except Exception as e:
+            logger.error(f"Error eliminando parámetros {tipo}: {e}")
+            self.db.rollback()
+            return False
+
     # ==================== MÉTODO DE CÁLCULO DE DEMANDA ====================
 
     def get_demand_method(self) -> str:

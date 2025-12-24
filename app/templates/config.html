@@ -290,7 +290,7 @@
         .add-row .form-group {
             margin-bottom: 0;
             flex: 1;
-            min-width: 180px;
+            min-width: 150px;
         }
 
         /* Checkbox List */
@@ -462,6 +462,45 @@
         .loading.active {
             display: block;
         }
+
+        /* Badge/Tag for category type */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-marca { background: #dbeafe; color: #1d4ed8; }
+        .badge-rubro { background: #dcfce7; color: #166534; }
+        .badge-subrubro { background: #fef3c7; color: #92400e; }
+
+        /* Subsection styling */
+        .subsection {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .subsection-title {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        /* Info box */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid #93c5fd;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+        .info-box strong {
+            color: var(--primary-dark);
+        }
     </style>
 </head>
 <body>
@@ -493,7 +532,7 @@
     </header>
 
     <div class="container">
-        <!-- Parametros Globales -->
+        <!-- Panel 1: Parametros de Calculo -->
         <section class="section">
             <h2 class="section-title">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -501,10 +540,16 @@
                 </svg>
                 Parametros de Calculo
             </h2>
+
+            <!-- Valores globales por defecto -->
+            <div class="info-box">
+                <strong>Valores por defecto:</strong> Se aplican a todos los productos que no tienen una excepcion configurada.
+            </div>
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="diasStockDefault">Dias de stock minimo (por defecto)</label>
-                    <input type="number" id="diasStockDefault" min="1" max="365" value="30">
+                    <label for="diasStockDefault">Dias de stock minimo</label>
+                    <input type="number" id="diasStockDefault" min="1" max="365" value="14">
                 </div>
                 <div class="form-group">
                     <label for="factorIdeal">Factor stock ideal (x minimo)</label>
@@ -518,159 +563,153 @@
                     <label for="periodoVentas">Periodo de ventas (dias)</label>
                     <input type="number" id="periodoVentas" min="30" max="730" value="365">
                 </div>
-                <div class="form-group">
-                    <label for="umbralMinimo">Umbral minimo de ventas</label>
-                    <input type="number" id="umbralMinimo" min="1" max="100" value="5">
-                    <small style="color: #666; font-size: 11px;">Productos con menos ventas no se reponen</small>
-                </div>
             </div>
             <button class="btn btn-success" onclick="saveGlobalParams()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Guardar Parametros
+                Guardar Parametros Globales
             </button>
             <div class="message" id="messageGlobal"></div>
-        </section>
 
-        <!-- Configuracion por Rubro -->
-        <section class="section">
-            <h2 class="section-title">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                </svg>
-                Configuracion por Rubro/Subrubro
-            </h2>
-            <p class="description">
-                Defina dias de stock especificos para cada rubro. Si no se configura, se usa el valor por defecto.
-            </p>
+            <!-- Excepciones por marca/rubro/subrubro -->
+            <div class="subsection">
+                <h3 class="subsection-title">Excepciones por Marca / Rubro / Subrubro</h3>
+                <p class="description">
+                    Configure valores diferentes para categorias especificas. <strong>Prioridad:</strong> Marca > Subrubro > Rubro > Global
+                </p>
 
-            <table id="tableRubro">
-                <thead>
-                    <tr>
-                        <th>Rubro</th>
-                        <th>Dias de Stock</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="rubroTableBody">
-                </tbody>
-            </table>
+                <table id="tableParams">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Dias Stock</th>
+                            <th>Factor Ideal</th>
+                            <th>Factor Maximo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paramsTableBody">
+                    </tbody>
+                </table>
 
-            <div class="add-row">
-                <div class="form-group">
-                    <label for="newRubro">Rubro</label>
-                    <select id="newRubro">
-                        <option value="">Seleccione...</option>
-                    </select>
+                <div class="add-row">
+                    <div class="form-group">
+                        <label for="paramTipo">Tipo</label>
+                        <select id="paramTipo" onchange="updateParamOptions()">
+                            <option value="">Seleccione...</option>
+                            <option value="marca">Marca</option>
+                            <option value="rubro">Rubro</option>
+                            <option value="subrubro">Subrubro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="paramNombre">Nombre</label>
+                        <select id="paramNombre">
+                            <option value="">Seleccione tipo primero...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="paramDias">Dias Stock</label>
+                        <input type="number" id="paramDias" min="1" max="365" value="14">
+                    </div>
+                    <div class="form-group">
+                        <label for="paramFactorIdeal">Factor Ideal</label>
+                        <input type="number" id="paramFactorIdeal" min="1" max="10" step="0.1" value="2.0">
+                    </div>
+                    <div class="form-group">
+                        <label for="paramFactorMax">Factor Max</label>
+                        <input type="number" id="paramFactorMax" min="1" max="20" step="0.1" value="4.0">
+                    </div>
+                    <button class="btn btn-primary" onclick="addCategoryParams()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Agregar
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label for="newRubroDias">Dias de Stock</label>
-                    <input type="number" id="newRubroDias" min="1" max="365" value="30">
-                </div>
-                <button class="btn btn-primary" onclick="addRubroConfig()">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Agregar Rubro
-                </button>
+                <div class="message" id="messageParams"></div>
             </div>
-            <div class="message" id="messageRubro"></div>
         </section>
 
-        <!-- Configuracion por Marca -->
-        <section class="section">
-            <h2 class="section-title">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                </svg>
-                Configuracion por Marca (prioridad sobre Rubro)
-            </h2>
-            <p class="description">
-                La configuracion por marca tiene prioridad sobre el rubro. Use esto para marcas especiales.
-            </p>
-
-            <table id="tableMarca">
-                <thead>
-                    <tr>
-                        <th>Marca</th>
-                        <th>Dias de Stock</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="marcaTableBody">
-                </tbody>
-            </table>
-
-            <div class="add-row">
-                <div class="form-group">
-                    <label for="newMarca">Marca</label>
-                    <select id="newMarca">
-                        <option value="">Seleccione...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newMarcaDias">Dias de Stock</label>
-                    <input type="number" id="newMarcaDias" min="1" max="365" value="30">
-                </div>
-                <button class="btn btn-primary" onclick="addMarcaConfig()">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Agregar Marca
-                </button>
-            </div>
-            <div class="message" id="messageMarca"></div>
-        </section>
-
-        <!-- Umbral Minimo por Sub-Rubro -->
+        <!-- Panel 2: Umbral Minimo de Ventas -->
         <section class="section">
             <h2 class="section-title">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
-                Umbral Minimo de Ventas por Sub-Rubro
+                Umbral Minimo de Ventas
             </h2>
-            <p class="description">
-                Define las ventas minimas (en el periodo de 365 dias) que debe tener un producto
-                para que el sistema le calcule stock minimo/ideal/maximo.
-                <br><br>
-                <strong>Umbral Default:</strong> <span id="defaultThreshold" style="color: var(--primary); font-weight: bold;">5</span> ventas
-                <br>
-                <small>Productos con menos ventas que el umbral tendran stock min/ideal/max = 0 (sin reposicion automatica)</small>
-            </p>
 
-            <table id="tableUmbral">
-                <thead>
-                    <tr>
-                        <th>Sub-Rubro</th>
-                        <th>Umbral Minimo (ventas)</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="umbralTableBody">
-                </tbody>
-            </table>
-
-            <div class="add-row">
-                <div class="form-group">
-                    <label for="newSubrubro">Sub-Rubro</label>
-                    <select id="newSubrubro">
-                        <option value="">Seleccione...</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="newUmbral">Umbral (ventas)</label>
-                    <input type="number" id="newUmbral" min="1" max="100" value="5">
-                </div>
-                <button class="btn btn-primary" onclick="addSubrubroThreshold()">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                    </svg>
-                    Agregar Umbral
-                </button>
+            <div class="info-box">
+                <strong>Umbral por defecto:</strong> Productos con ventas menores al umbral (en el periodo de ventas) no se reponen automaticamente.
             </div>
-            <div class="message" id="messageUmbral"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="umbralGlobal">Umbral minimo global (ventas)</label>
+                    <input type="number" id="umbralGlobal" min="1" max="1000" value="5">
+                    <small style="color: #666; font-size: 11px;">Ventas minimas para calcular stock min/ideal/max</small>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="saveGlobalThreshold()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Guardar Umbral Global
+            </button>
+            <div class="message" id="messageUmbralGlobal"></div>
+
+            <!-- Excepciones de umbral por marca/rubro/subrubro -->
+            <div class="subsection">
+                <h3 class="subsection-title">Excepciones de Umbral por Marca / Rubro / Subrubro</h3>
+                <p class="description">
+                    Configure umbrales diferentes para categorias especificas. <strong>Prioridad:</strong> Marca > Subrubro > Rubro > Global
+                </p>
+
+                <table id="tableThresholds">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Umbral (ventas)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="thresholdsTableBody">
+                    </tbody>
+                </table>
+
+                <div class="add-row">
+                    <div class="form-group">
+                        <label for="thresholdTipo">Tipo</label>
+                        <select id="thresholdTipo" onchange="updateThresholdOptions()">
+                            <option value="">Seleccione...</option>
+                            <option value="marca">Marca</option>
+                            <option value="rubro">Rubro</option>
+                            <option value="subrubro">Subrubro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="thresholdNombre">Nombre</label>
+                        <select id="thresholdNombre">
+                            <option value="">Seleccione tipo primero...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="thresholdUmbral">Umbral (ventas)</label>
+                        <input type="number" id="thresholdUmbral" min="1" max="1000" value="5">
+                    </div>
+                    <button class="btn btn-primary" onclick="addThreshold()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Agregar
+                    </button>
+                </div>
+                <div class="message" id="messageThresholds"></div>
+            </div>
         </section>
 
         <!-- Metodo de Calculo de Demanda -->
@@ -684,11 +723,11 @@
             <p class="description">
                 Define como se calcula la demanda diaria de cada producto para determinar los niveles de stock.
                 <br><br>
-                <strong>Metodo actual:</strong> <span id="currentDemandMethod" style="color: var(--primary); font-weight: bold;">Cargando...</span>
+                <strong>Metodo actual:</strong> <span id="currentDemandMethod" style="color: var(--primary-blue); font-weight: bold;">Cargando...</span>
             </p>
 
             <div class="method-selector" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
-                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="demandMethod" value="mediana" style="margin-top: 4px;">
                     <div>
                         <strong style="color: var(--success);">Mediana Ajustada (Recomendado)</strong>
@@ -699,7 +738,7 @@
                     </div>
                 </label>
 
-                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="demandMethod" value="promedio_simple" style="margin-top: 4px;">
                     <div>
                         <strong>Promedio Simple</strong>
@@ -710,7 +749,7 @@
                     </div>
                 </label>
 
-                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #333; border-radius: 8px; cursor: pointer;">
+                <label class="method-option" style="display: flex; align-items: flex-start; gap: 10px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
                     <input type="radio" name="demandMethod" value="combinado" style="margin-top: 4px;">
                     <div>
                         <strong>Combinado (ML + Movil)</strong>
@@ -787,9 +826,16 @@
     </footer>
 
     <script>
+        // Datos globales para los selects
+        let availableMarcas = [];
+        let availableRubros = [];
+        let availableSubrubros = [];
+
         // Cargar configuracion al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             loadConfig();
+            loadCategoryParams();
+            loadThresholds();
         });
 
         // Cargar toda la configuracion
@@ -803,22 +849,12 @@
                 document.getElementById('factorIdeal').value = data.global_params.factor_ideal;
                 document.getElementById('factorMaximo').value = data.global_params.factor_maximo;
                 document.getElementById('periodoVentas').value = data.global_params.periodo_ventas_dias;
-                document.getElementById('umbralMinimo').value = data.global_params.umbral_minimo_ventas || 5;
+                document.getElementById('umbralGlobal').value = data.global_params.umbral_minimo_ventas || 5;
 
-                // Configuraciones de rubro
-                loadRubroTable(data.rubro_configs);
-
-                // Configuraciones de marca
-                loadMarcaTable(data.marca_configs);
-
-                // Listas disponibles para selects
-                loadSelectOptions('newRubro', data.available_rubros);
-                loadSelectOptions('newMarca', data.available_brands);
-
-                // Umbrales por sub-rubro
-                document.getElementById('defaultThreshold').textContent = data.default_threshold || 5;
-                loadUmbralTable(data.subrubro_thresholds);
-                loadSelectOptions('newSubrubro', data.available_subrubros);
+                // Guardar listas para selects
+                availableMarcas = data.available_brands || [];
+                availableRubros = data.available_rubros || [];
+                availableSubrubros = data.available_subrubros || [];
 
                 // Listas de exclusion
                 loadDepositCheckboxes(data.available_deposits, data.excluded_deposits);
@@ -832,120 +868,170 @@
             }
         }
 
-        // Cargar tabla de rubros
-        function loadRubroTable(configs) {
-            const tbody = document.getElementById('rubroTableBody');
+        // Cargar parametros por categoria
+        async function loadCategoryParams() {
+            try {
+                const response = await fetch('/api/config/category-params');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    renderParamsTable(data.params);
+                }
+            } catch (error) {
+                console.error('Error cargando parametros por categoria:', error);
+            }
+        }
+
+        // Cargar umbrales por categoria
+        async function loadThresholds() {
+            try {
+                const response = await fetch('/api/config/thresholds');
+                const data = await response.json();
+
+                if (data.status === 'ok') {
+                    renderThresholdsTable(data.thresholds);
+                }
+            } catch (error) {
+                console.error('Error cargando umbrales:', error);
+            }
+        }
+
+        // Renderizar tabla de parametros
+        function renderParamsTable(params) {
+            const tbody = document.getElementById('paramsTableBody');
             tbody.innerHTML = '';
 
-            configs.forEach(config => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${config.rubro}</td>
-                    <td>${config.dias_stock}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRubroConfig('${config.rubro}')">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            Eliminar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            let hasData = false;
+
+            // Procesar cada tipo
+            for (const tipo of ['marca', 'rubro', 'subrubro']) {
+                const items = params[tipo] || {};
+                for (const [nombre, values] of Object.entries(items)) {
+                    hasData = true;
+                    const tr = document.createElement('tr');
+                    const badgeClass = `badge-${tipo}`;
+                    const safeNombre = nombre.replace(/'/g, "\\'");
+                    tr.innerHTML = `
+                        <td><span class="badge ${badgeClass}">${tipo}</span></td>
+                        <td>${nombre}</td>
+                        <td>${values.dias_stock || '-'}</td>
+                        <td>${values.factor_ideal || 'global'}</td>
+                        <td>${values.factor_maximo || 'global'}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCategoryParams('${tipo}', '${safeNombre}')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            if (!hasData) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-gray);">No hay excepciones configuradas (todos usan valores globales)</td></tr>';
+            }
+        }
+
+        // Renderizar tabla de umbrales
+        function renderThresholdsTable(thresholds) {
+            const tbody = document.getElementById('thresholdsTableBody');
+            tbody.innerHTML = '';
+
+            let hasData = false;
+
+            for (const tipo of ['marca', 'rubro', 'subrubro']) {
+                const items = thresholds[tipo] || {};
+                for (const [nombre, umbral] of Object.entries(items)) {
+                    hasData = true;
+                    const tr = document.createElement('tr');
+                    const badgeClass = `badge-${tipo}`;
+                    const safeNombre = nombre.replace(/'/g, "\\'");
+                    tr.innerHTML = `
+                        <td><span class="badge ${badgeClass}">${tipo}</span></td>
+                        <td>${nombre}</td>
+                        <td>${umbral} ventas</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteThreshold('${tipo}', '${safeNombre}')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            if (!hasData) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-gray);">No hay excepciones configuradas (todos usan umbral global)</td></tr>';
+            }
+        }
+
+        // Actualizar opciones del select de parametros
+        function updateParamOptions() {
+            const tipo = document.getElementById('paramTipo').value;
+            const select = document.getElementById('paramNombre');
+            select.innerHTML = '<option value="">Seleccione...</option>';
+
+            let options = [];
+            if (tipo === 'marca') options = availableMarcas;
+            else if (tipo === 'rubro') options = availableRubros;
+            else if (tipo === 'subrubro') options = availableSubrubros;
+
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                select.appendChild(option);
             });
-
-            if (configs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay configuraciones de rubro</td></tr>';
-            }
         }
 
-        // Cargar tabla de marcas
-        function loadMarcaTable(configs) {
-            const tbody = document.getElementById('marcaTableBody');
-            tbody.innerHTML = '';
+        // Actualizar opciones del select de umbrales
+        function updateThresholdOptions() {
+            const tipo = document.getElementById('thresholdTipo').value;
+            const select = document.getElementById('thresholdNombre');
+            select.innerHTML = '<option value="">Seleccione...</option>';
 
-            configs.forEach(config => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${config.marca}</td>
-                    <td>${config.dias_stock}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteMarcaConfig('${config.marca}')">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            Eliminar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
+            let options = [];
+            if (tipo === 'marca') options = availableMarcas;
+            else if (tipo === 'rubro') options = availableRubros;
+            else if (tipo === 'subrubro') options = availableSubrubros;
+
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                select.appendChild(option);
             });
-
-            if (configs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay configuraciones de marca</td></tr>';
-            }
         }
 
-        // Cargar tabla de umbrales por sub-rubro
-        function loadUmbralTable(thresholds) {
-            const tbody = document.getElementById('umbralTableBody');
-            tbody.innerHTML = '';
-
-            if (!thresholds || Object.keys(thresholds).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-gray);">No hay umbrales personalizados (todos usan default)</td></tr>';
-                return;
-            }
-
-            for (const [subrubro, umbral] of Object.entries(thresholds)) {
-                const tr = document.createElement('tr');
-                const safeSubrubro = subrubro.replace(/'/g, "\\'");
-                tr.innerHTML = `
-                    <td>${subrubro}</td>
-                    <td>${umbral} ventas</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="deleteSubrubroThreshold('${safeSubrubro}')">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            Eliminar
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            }
-        }
-
-        // Agregar umbral por sub-rubro
-        async function addSubrubroThreshold() {
-            const message = document.getElementById('messageUmbral');
+        // Guardar parametros globales
+        async function saveGlobalParams() {
+            const message = document.getElementById('messageGlobal');
             message.classList.remove('active', 'success', 'error');
 
-            const subrubro = document.getElementById('newSubrubro').value;
-            const umbral = parseInt(document.getElementById('newUmbral').value);
-
-            if (!subrubro) {
-                message.textContent = 'Seleccione un sub-rubro';
-                message.classList.add('active', 'error');
-                return;
-            }
-
-            if (!umbral || umbral < 1 || umbral > 100) {
-                message.textContent = 'El umbral debe estar entre 1 y 100';
-                message.classList.add('active', 'error');
-                return;
-            }
+            const params = {
+                dias_stock_default: parseInt(document.getElementById('diasStockDefault').value),
+                factor_ideal: parseFloat(document.getElementById('factorIdeal').value),
+                factor_maximo: parseFloat(document.getElementById('factorMaximo').value),
+                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value),
+                umbral_minimo_ventas: parseInt(document.getElementById('umbralGlobal').value)
+            };
 
             try {
-                const response = await fetch('/api/config/subrubro-threshold', {
+                const response = await fetch('/api/config/global-params', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ subrubro, umbral })
+                    body: JSON.stringify(params)
                 });
 
                 if (response.ok) {
-                    message.textContent = 'Umbral guardado correctamente';
+                    message.textContent = 'Parametros globales guardados correctamente';
                     message.classList.add('active', 'success');
-                    loadConfig();
                 } else {
                     throw new Error('Error al guardar');
                 }
@@ -955,18 +1041,154 @@
             }
         }
 
-        // Eliminar umbral de sub-rubro
-        async function deleteSubrubroThreshold(subrubro) {
+        // Guardar umbral global
+        async function saveGlobalThreshold() {
+            const message = document.getElementById('messageUmbralGlobal');
+            message.classList.remove('active', 'success', 'error');
+
+            const umbral = parseInt(document.getElementById('umbralGlobal').value);
+
+            const params = {
+                dias_stock_default: parseInt(document.getElementById('diasStockDefault').value),
+                factor_ideal: parseFloat(document.getElementById('factorIdeal').value),
+                factor_maximo: parseFloat(document.getElementById('factorMaximo').value),
+                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value),
+                umbral_minimo_ventas: umbral
+            };
+
             try {
-                const response = await fetch(`/api/config/subrubro-threshold/${encodeURIComponent(subrubro)}`, {
+                const response = await fetch('/api/config/global-params', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(params)
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Umbral global guardado correctamente';
+                    message.classList.add('active', 'success');
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Agregar parametros por categoria
+        async function addCategoryParams() {
+            const message = document.getElementById('messageParams');
+            message.classList.remove('active', 'success', 'error');
+
+            const tipo = document.getElementById('paramTipo').value;
+            const nombre = document.getElementById('paramNombre').value;
+            const dias = parseInt(document.getElementById('paramDias').value);
+            const factorIdeal = parseFloat(document.getElementById('paramFactorIdeal').value);
+            const factorMax = parseFloat(document.getElementById('paramFactorMax').value);
+
+            if (!tipo || !nombre) {
+                message.textContent = 'Seleccione tipo y nombre';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/category-params', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tipo,
+                        nombre,
+                        dias_stock: dias,
+                        factor_ideal: factorIdeal,
+                        factor_maximo: factorMax
+                    })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Excepcion agregada correctamente';
+                    message.classList.add('active', 'success');
+                    loadCategoryParams();
+                    // Limpiar selects
+                    document.getElementById('paramTipo').value = '';
+                    document.getElementById('paramNombre').innerHTML = '<option value="">Seleccione tipo primero...</option>';
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Eliminar parametros por categoria
+        async function deleteCategoryParams(tipo, nombre) {
+            if (!confirm(`Eliminar excepcion de ${tipo} "${nombre}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/config/category-params/${tipo}/${encodeURIComponent(nombre)}`, {
                     method: 'DELETE'
                 });
 
                 if (response.ok) {
-                    loadConfig();
+                    loadCategoryParams();
                 }
             } catch (error) {
-                console.error('Error eliminando umbral:', error);
+                console.error('Error eliminando:', error);
+            }
+        }
+
+        // Agregar umbral por categoria
+        async function addThreshold() {
+            const message = document.getElementById('messageThresholds');
+            message.classList.remove('active', 'success', 'error');
+
+            const tipo = document.getElementById('thresholdTipo').value;
+            const nombre = document.getElementById('thresholdNombre').value;
+            const umbral = parseInt(document.getElementById('thresholdUmbral').value);
+
+            if (!tipo || !nombre) {
+                message.textContent = 'Seleccione tipo y nombre';
+                message.classList.add('active', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/config/threshold', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tipo, nombre, umbral })
+                });
+
+                if (response.ok) {
+                    message.textContent = 'Umbral agregado correctamente';
+                    message.classList.add('active', 'success');
+                    loadThresholds();
+                    document.getElementById('thresholdTipo').value = '';
+                    document.getElementById('thresholdNombre').innerHTML = '<option value="">Seleccione tipo primero...</option>';
+                } else {
+                    throw new Error('Error al guardar');
+                }
+            } catch (error) {
+                message.textContent = 'Error: ' + error.message;
+                message.classList.add('active', 'error');
+            }
+        }
+
+        // Eliminar umbral por categoria
+        async function deleteThreshold(tipo, nombre) {
+            if (!confirm(`Eliminar umbral de ${tipo} "${nombre}"?`)) return;
+
+            try {
+                const response = await fetch(`/api/config/threshold/${tipo}/${encodeURIComponent(nombre)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadThresholds();
+                }
+            } catch (error) {
+                console.error('Error eliminando:', error);
             }
         }
 
@@ -979,7 +1201,6 @@
                 if (data.status === 'ok') {
                     const metodo = data.metodo_actual;
 
-                    // Actualizar texto del metodo actual
                     const nombres = {
                         'promedio_simple': 'Promedio Simple',
                         'mediana': 'Mediana Ajustada',
@@ -987,7 +1208,6 @@
                     };
                     document.getElementById('currentDemandMethod').textContent = nombres[metodo] || metodo;
 
-                    // Seleccionar el radio button correspondiente
                     const radio = document.querySelector(`input[name="demandMethod"][value="${metodo}"]`);
                     if (radio) {
                         radio.checked = true;
@@ -1034,19 +1254,6 @@
             }
         }
 
-        // Cargar opciones en select
-        function loadSelectOptions(selectId, options) {
-            const select = document.getElementById(selectId);
-            select.innerHTML = '<option value="">Seleccione...</option>';
-
-            options.forEach(opt => {
-                const option = document.createElement('option');
-                option.value = opt;
-                option.textContent = opt;
-                select.appendChild(option);
-            });
-        }
-
         // Cargar checkboxes de depositos
         function loadDepositCheckboxes(deposits, excluded) {
             const container = document.getElementById('depositsList');
@@ -1082,140 +1289,6 @@
                 `;
                 container.appendChild(div);
             });
-        }
-
-        // Guardar parametros globales
-        async function saveGlobalParams() {
-            const message = document.getElementById('messageGlobal');
-            message.classList.remove('active', 'success', 'error');
-
-            const params = {
-                dias_stock_default: parseInt(document.getElementById('diasStockDefault').value),
-                factor_ideal: parseFloat(document.getElementById('factorIdeal').value),
-                factor_maximo: parseFloat(document.getElementById('factorMaximo').value),
-                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value),
-                umbral_minimo_ventas: parseInt(document.getElementById('umbralMinimo').value)
-            };
-
-            try {
-                const response = await fetch('/api/config/global-params', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params)
-                });
-
-                if (response.ok) {
-                    message.textContent = 'Parametros guardados correctamente';
-                    message.classList.add('active', 'success');
-                } else {
-                    throw new Error('Error al guardar');
-                }
-            } catch (error) {
-                message.textContent = 'Error: ' + error.message;
-                message.classList.add('active', 'error');
-            }
-        }
-
-        // Agregar configuracion de rubro
-        async function addRubroConfig() {
-            const message = document.getElementById('messageRubro');
-            message.classList.remove('active', 'success', 'error');
-
-            const rubro = document.getElementById('newRubro').value;
-            const dias = parseInt(document.getElementById('newRubroDias').value);
-
-            if (!rubro) {
-                message.textContent = 'Seleccione un rubro';
-                message.classList.add('active', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/config/rubro', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rubro, dias_stock: dias })
-                });
-
-                if (response.ok) {
-                    message.textContent = 'Configuracion agregada';
-                    message.classList.add('active', 'success');
-                    loadConfig();
-                } else {
-                    throw new Error('Error al guardar');
-                }
-            } catch (error) {
-                message.textContent = 'Error: ' + error.message;
-                message.classList.add('active', 'error');
-            }
-        }
-
-        // Eliminar configuracion de rubro
-        async function deleteRubroConfig(rubro) {
-            if (!confirm(`Eliminar configuracion de "${rubro}"?`)) return;
-
-            try {
-                const response = await fetch(`/api/config/rubro/${encodeURIComponent(rubro)}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    loadConfig();
-                }
-            } catch (error) {
-                alert('Error al eliminar');
-            }
-        }
-
-        // Agregar configuracion de marca
-        async function addMarcaConfig() {
-            const message = document.getElementById('messageMarca');
-            message.classList.remove('active', 'success', 'error');
-
-            const marca = document.getElementById('newMarca').value;
-            const dias = parseInt(document.getElementById('newMarcaDias').value);
-
-            if (!marca) {
-                message.textContent = 'Seleccione una marca';
-                message.classList.add('active', 'error');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/config/marca', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ marca, dias_stock: dias })
-                });
-
-                if (response.ok) {
-                    message.textContent = 'Configuracion agregada';
-                    message.classList.add('active', 'success');
-                    loadConfig();
-                } else {
-                    throw new Error('Error al guardar');
-                }
-            } catch (error) {
-                message.textContent = 'Error: ' + error.message;
-                message.classList.add('active', 'error');
-            }
-        }
-
-        // Eliminar configuracion de marca
-        async function deleteMarcaConfig(marca) {
-            if (!confirm(`Eliminar configuracion de "${marca}"?`)) return;
-
-            try {
-                const response = await fetch(`/api/config/marca/${encodeURIComponent(marca)}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    loadConfig();
-                }
-            } catch (error) {
-                alert('Error al eliminar');
-            }
         }
 
         // Guardar exclusiones

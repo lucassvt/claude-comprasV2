@@ -87,6 +87,20 @@ class DemandMethodRequest(BaseModel):
     metodo: str
 
 
+class CategoryParamsRequest(BaseModel):
+    tipo: str  # 'marca', 'rubro', 'subrubro'
+    nombre: str
+    dias_stock: int
+    factor_ideal: Optional[float] = None
+    factor_maximo: Optional[float] = None
+
+
+class ThresholdRequest(BaseModel):
+    tipo: str  # 'marca', 'rubro', 'subrubro'
+    nombre: str
+    umbral: int
+
+
 # ==================== PÁGINAS HTML ====================
 
 @app.get("/", response_class=HTMLResponse)
@@ -189,6 +203,86 @@ async def save_exclusions(
     if success_deposits and success_brands:
         return {"status": "ok", "message": "Exclusiones guardadas"}
     raise HTTPException(status_code=500, detail="Error guardando exclusiones")
+
+
+# ==================== API DE PARÁMETROS POR CATEGORÍA ====================
+
+@app.get("/api/config/category-params")
+async def get_category_params(db: Session = Depends(get_db)):
+    """Obtiene todos los parámetros de cálculo por categoría"""
+    config_service = ConfigService(db)
+    return {
+        "status": "ok",
+        "params": config_service.get_all_category_params()
+    }
+
+
+@app.post("/api/config/category-params")
+async def save_category_params(
+    params: CategoryParamsRequest,
+    db: Session = Depends(get_db)
+):
+    """Guarda parámetros de cálculo para marca, rubro o subrubro"""
+    config_service = ConfigService(db)
+    success = config_service.save_category_params(
+        tipo=params.tipo,
+        nombre=params.nombre,
+        dias_stock=params.dias_stock,
+        factor_ideal=params.factor_ideal,
+        factor_maximo=params.factor_maximo
+    )
+    if success:
+        return {"status": "ok", "message": f"Parámetros de {params.tipo} '{params.nombre}' guardados"}
+    raise HTTPException(status_code=500, detail="Error guardando parámetros")
+
+
+@app.delete("/api/config/category-params/{tipo}/{nombre}")
+async def delete_category_params(tipo: str, nombre: str, db: Session = Depends(get_db)):
+    """Elimina parámetros de cálculo para marca, rubro o subrubro"""
+    config_service = ConfigService(db)
+    success = config_service.delete_category_params(tipo, nombre)
+    if success:
+        return {"status": "ok", "message": f"Parámetros de {tipo} '{nombre}' eliminados"}
+    raise HTTPException(status_code=500, detail="Error eliminando parámetros")
+
+
+# ==================== API DE UMBRALES POR CATEGORÍA ====================
+
+@app.get("/api/config/thresholds")
+async def get_thresholds(db: Session = Depends(get_db)):
+    """Obtiene todos los umbrales de ventas por categoría"""
+    config_service = ConfigService(db)
+    return {
+        "status": "ok",
+        "thresholds": config_service.get_all_thresholds()
+    }
+
+
+@app.post("/api/config/threshold")
+async def save_threshold(
+    threshold: ThresholdRequest,
+    db: Session = Depends(get_db)
+):
+    """Guarda umbral de ventas para marca, rubro o subrubro"""
+    config_service = ConfigService(db)
+    success = config_service.save_threshold(
+        tipo=threshold.tipo,
+        nombre=threshold.nombre,
+        umbral=threshold.umbral
+    )
+    if success:
+        return {"status": "ok", "message": f"Umbral de {threshold.tipo} '{threshold.nombre}' guardado"}
+    raise HTTPException(status_code=500, detail="Error guardando umbral")
+
+
+@app.delete("/api/config/threshold/{tipo}/{nombre}")
+async def delete_threshold(tipo: str, nombre: str, db: Session = Depends(get_db)):
+    """Elimina umbral de ventas para marca, rubro o subrubro"""
+    config_service = ConfigService(db)
+    success = config_service.delete_threshold(tipo, nombre)
+    if success:
+        return {"status": "ok", "message": f"Umbral de {tipo} '{nombre}' eliminado"}
+    raise HTTPException(status_code=500, detail="Error eliminando umbral")
 
 
 # ==================== API DE STOCK ====================
