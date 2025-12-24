@@ -249,12 +249,13 @@ class StockCalculator:
             'dias_stock_default': settings.default_stock_days,
             'factor_ideal': settings.factor_ideal,
             'factor_maximo': settings.factor_maximo,
-            'periodo_ventas_dias': settings.sales_period_days
+            'periodo_ventas_dias': settings.sales_period_days,
+            'umbral_minimo_ventas': settings.min_sales_threshold
         }
 
         result = self.db.execute(text("""
             SELECT key, value FROM system_config
-            WHERE key IN ('dias_stock_default', 'factor_ideal', 'factor_maximo', 'periodo_ventas_dias')
+            WHERE key IN ('dias_stock_default', 'factor_ideal', 'factor_maximo', 'periodo_ventas_dias', 'umbral_minimo_ventas')
         """))
 
         for row in result:
@@ -268,6 +269,8 @@ class StockCalculator:
                 self.global_config['factor_maximo'] = float(value)
             elif key == 'periodo_ventas_dias':
                 self.global_config['periodo_ventas_dias'] = int(value)
+            elif key == 'umbral_minimo_ventas':
+                self.global_config['umbral_minimo_ventas'] = int(value)
 
         logger.info(f"Parámetros globales cargados: {self.global_config}")
 
@@ -368,8 +371,8 @@ class StockCalculator:
         # if rubro and rubro in self.rubro_thresholds:
         #     return self.rubro_thresholds[rubro]
 
-        # Default global desde settings
-        return settings.min_sales_threshold
+        # Default global desde BD (con fallback a settings)
+        return self.global_config.get('umbral_minimo_ventas', settings.min_sales_threshold)
 
     def _get_products_with_stock(
         self,

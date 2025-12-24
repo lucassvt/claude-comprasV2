@@ -518,6 +518,11 @@
                     <label for="periodoVentas">Periodo de ventas (dias)</label>
                     <input type="number" id="periodoVentas" min="30" max="730" value="365">
                 </div>
+                <div class="form-group">
+                    <label for="umbralMinimo">Umbral minimo de ventas</label>
+                    <input type="number" id="umbralMinimo" min="1" max="100" value="5">
+                    <small style="color: #666; font-size: 11px;">Productos con menos ventas no se reponen</small>
+                </div>
             </div>
             <button class="btn btn-success" onclick="saveGlobalParams()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -798,6 +803,7 @@
                 document.getElementById('factorIdeal').value = data.global_params.factor_ideal;
                 document.getElementById('factorMaximo').value = data.global_params.factor_maximo;
                 document.getElementById('periodoVentas').value = data.global_params.periodo_ventas_dias;
+                document.getElementById('umbralMinimo').value = data.global_params.umbral_minimo_ventas || 5;
 
                 // Configuraciones de rubro
                 loadRubroTable(data.rubro_configs);
@@ -1087,7 +1093,8 @@
                 dias_stock_default: parseInt(document.getElementById('diasStockDefault').value),
                 factor_ideal: parseFloat(document.getElementById('factorIdeal').value),
                 factor_maximo: parseFloat(document.getElementById('factorMaximo').value),
-                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value)
+                periodo_ventas_dias: parseInt(document.getElementById('periodoVentas').value),
+                umbral_minimo_ventas: parseInt(document.getElementById('umbralMinimo').value)
             };
 
             try {

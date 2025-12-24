@@ -65,6 +65,7 @@ class GlobalParamsRequest(BaseModel):
     factor_ideal: float = 2.0
     factor_maximo: float = 4.0
     periodo_ventas_dias: int = 365
+    umbral_minimo_ventas: Optional[int] = None
 
 
 class RubroConfigRequest(BaseModel):
@@ -120,7 +121,8 @@ async def save_global_params(
         dias_stock_default=params.dias_stock_default,
         factor_ideal=params.factor_ideal,
         factor_maximo=params.factor_maximo,
-        periodo_ventas_dias=params.periodo_ventas_dias
+        periodo_ventas_dias=params.periodo_ventas_dias,
+        umbral_minimo_ventas=params.umbral_minimo_ventas
     )
     if success:
         return {"status": "ok", "message": "Parámetros guardados"}

@@ -31,13 +31,14 @@ class ConfigService:
             'dias_stock_default': settings.default_stock_days,
             'factor_ideal': settings.factor_ideal,
             'factor_maximo': settings.factor_maximo,
-            'periodo_ventas_dias': settings.sales_period_days
+            'periodo_ventas_dias': settings.sales_period_days,
+            'umbral_minimo_ventas': settings.min_sales_threshold
         }
 
         # Intentar obtener valores personalizados de la BD
         result = self.db.execute(text("""
             SELECT key, value FROM system_config
-            WHERE key IN ('dias_stock_default', 'factor_ideal', 'factor_maximo', 'periodo_ventas_dias')
+            WHERE key IN ('dias_stock_default', 'factor_ideal', 'factor_maximo', 'periodo_ventas_dias', 'umbral_minimo_ventas')
         """))
 
         for row in result:
@@ -51,6 +52,8 @@ class ConfigService:
                 params['factor_maximo'] = float(value)
             elif key == 'periodo_ventas_dias':
                 params['periodo_ventas_dias'] = int(value)
+            elif key == 'umbral_minimo_ventas':
+                params['umbral_minimo_ventas'] = int(value)
 
         return params
 
@@ -59,7 +62,8 @@ class ConfigService:
         dias_stock_default: int,
         factor_ideal: float,
         factor_maximo: float,
-        periodo_ventas_dias: int
+        periodo_ventas_dias: int,
+        umbral_minimo_ventas: int = None
     ) -> bool:
         """Guarda los parámetros globales"""
         try:
@@ -69,6 +73,10 @@ class ConfigService:
                 ('factor_maximo', str(factor_maximo)),
                 ('periodo_ventas_dias', str(periodo_ventas_dias))
             ]
+
+            # Agregar umbral si se proporciona
+            if umbral_minimo_ventas is not None:
+                params.append(('umbral_minimo_ventas', str(umbral_minimo_ventas)))
 
             for key, value in params:
                 self.db.execute(text("""
