@@ -438,19 +438,19 @@ class PurchaseService:
                 ranking += 1
                 if info['depositos_bajo_minimo']:
                     for dep in info['depositos_bajo_minimo']:
-                        stock_min_redondeado = int(round(dep['stock_minimo']))
-                        # Solo incluir si stock_minimo redondeado > 0
-                        if stock_min_redondeado > 0:
-                            data.append({
-                                'Ranking': ranking,
-                                'Código': info['cod_item'],
-                                'Producto': info['producto'],
-                                'Depósito': dep['deposito'],
-                                'Stock Actual': int(round(dep['stock_actual'])),
-                                'Stock Mínimo': stock_min_redondeado,
-                                'Faltante': int(round(dep['faltante'])),
-                                'Marca': info['marca']
-                            })
+                        # Si llegó aquí es porque stock_minimo > 0 (filtro línea 404)
+                        # Usar max(1, ...) para mostrar al menos 1 si redondea a 0
+                        stock_min_mostrar = max(1, int(round(dep['stock_minimo'])))
+                        data.append({
+                            'Ranking': ranking,
+                            'Código': info['cod_item'],
+                            'Producto': info['producto'],
+                            'Depósito': dep['deposito'],
+                            'Stock Actual': int(round(dep['stock_actual'])),
+                            'Stock Mínimo': stock_min_mostrar,
+                            'Faltante': max(0, stock_min_mostrar - int(round(dep['stock_actual']))),
+                            'Marca': info['marca']
+                        })
 
             if data:
                 df = pd.DataFrame(data)
