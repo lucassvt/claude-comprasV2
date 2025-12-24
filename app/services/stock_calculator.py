@@ -195,13 +195,9 @@ class StockCalculator:
             stock_reservado = float(ps['stock_reservado'])
 
             # Si stock_minimo = 0 (ventas bajas), el producto no requiere reposición
-            # No marcarlo como bajo_minimo ni excedente
+            # Siempre marcarlo como 'ok' - no necesita gestión de stock en este depósito
             if stock_minimo == 0:
-                # Producto con ventas insuficientes - no requiere gestión de stock
-                if stock_actual <= 0:
-                    estado = 'sin_stock'
-                else:
-                    estado = 'ok'  # Tiene stock pero no requiere reposición
+                estado = 'ok'  # No requiere reposición en este depósito
             elif stock_actual <= 0:
                 estado = 'sin_stock'
             elif stock_actual < stock_minimo:
