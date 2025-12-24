@@ -399,15 +399,20 @@ class PurchaseService:
 
             # Solo incluir si:
             # 1. stock_minimo > 0 (el depósito requiere stock de este producto)
-            # 2. stock_actual < stock_minimo (está bajo el mínimo)
-            # NO depender de sl.estado porque el caché puede tener datos viejos
-            if sl.stock_minimo > 0 and sl.stock_actual < sl.stock_minimo:
-                product_sales[sl.product_id]['depositos_bajo_minimo'].append({
-                    'deposito': sl.deposito_nombre,
-                    'stock_actual': sl.stock_actual,
-                    'stock_minimo': sl.stock_minimo,
-                    'faltante': sl.stock_minimo - sl.stock_actual
-                })
+            # 2. El faltante REDONDEADO es > 0 (para evitar casos donde 1.3 - 1.0 = 0.3 redondea a 0)
+            # Usamos los valores redondeados para el filtro porque son los que se mostrarán
+            if sl.stock_minimo > 0:
+                stock_min_redondeado = max(1, int(round(sl.stock_minimo)))
+                stock_actual_redondeado = int(round(sl.stock_actual))
+                faltante_redondeado = stock_min_redondeado - stock_actual_redondeado
+
+                if faltante_redondeado > 0:
+                    product_sales[sl.product_id]['depositos_bajo_minimo'].append({
+                        'deposito': sl.deposito_nombre,
+                        'stock_actual': stock_actual_redondeado,
+                        'stock_minimo': stock_min_redondeado,
+                        'faltante': faltante_redondeado
+                    })
 
         # Ordenar por MONTO de ventas (importe $) y tomar TOP 200
         sorted_products = sorted(
@@ -438,22 +443,17 @@ class PurchaseService:
                 ranking += 1
                 if info['depositos_bajo_minimo']:
                     for dep in info['depositos_bajo_minimo']:
-                        stock_min_mostrar = max(1, int(round(dep['stock_minimo'])))
-                        stock_actual_mostrar = int(round(dep['stock_actual']))
-                        faltante = stock_min_mostrar - stock_actual_mostrar
-
-                        # Solo incluir si hay faltante real (stock_actual < stock_minimo)
-                        if faltante > 0:
-                            data.append({
-                                'Ranking': ranking,
-                                'Código': info['cod_item'],
-                                'Producto': info['producto'],
-                                'Depósito': dep['deposito'],
-                                'Stock Actual': stock_actual_mostrar,
-                                'Stock Mínimo': stock_min_mostrar,
-                                'Faltante': faltante,
-                                'Marca': info['marca']
-                            })
+                        # Los valores ya vienen redondeados y filtrados desde arriba
+                        data.append({
+                            'Ranking': ranking,
+                            'Código': info['cod_item'],
+                            'Producto': info['producto'],
+                            'Depósito': dep['deposito'],
+                            'Stock Actual': dep['stock_actual'],
+                            'Stock Mínimo': dep['stock_minimo'],
+                            'Faltante': dep['faltante'],
+                            'Marca': info['marca']
+                        })
 
             if data:
                 df = pd.DataFrame(data)
