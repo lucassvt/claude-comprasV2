@@ -467,8 +467,9 @@ class StockCalculator:
     def get_summary(self, stock_levels: List[StockLevel]) -> Dict:
         """Genera un resumen de los niveles de stock"""
         total = len(stock_levels)
-        bajo_minimo = sum(1 for s in stock_levels if s.estado == 'bajo_minimo')
-        sin_stock = sum(1 for s in stock_levels if s.estado == 'sin_stock')
+        # Solo contar bajo_minimo/sin_stock si tienen stock_minimo > 0
+        bajo_minimo = sum(1 for s in stock_levels if s.estado == 'bajo_minimo' and s.stock_minimo > 0)
+        sin_stock = sum(1 for s in stock_levels if s.estado == 'sin_stock' and s.stock_minimo > 0)
         excedente = sum(1 for s in stock_levels if s.estado == 'excedente')
         ok = sum(1 for s in stock_levels if s.estado == 'ok')
 
@@ -569,8 +570,8 @@ class StockCalculator:
             if costo > 0 and sl.stock_real > 0:
                 valor_stock_total += sl.stock_real * costo
 
-            # Contar SKUs bajo mínimo
-            if sl.estado in ('bajo_minimo', 'sin_stock'):
+            # Contar SKUs bajo mínimo (solo si tienen stock_minimo > 0)
+            if sl.estado in ('bajo_minimo', 'sin_stock') and sl.stock_minimo > 0:
                 skus_bajo_minimo.add(sl.product_id)
 
         # Obtener SKUs TOP bajo mínimo
