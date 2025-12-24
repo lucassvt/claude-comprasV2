@@ -453,6 +453,8 @@ class PurchaseService:
 
             if data:
                 df = pd.DataFrame(data)
+                # FILTRO FINAL: eliminar cualquier fila con Stock Mínimo = 0
+                df = df[df['Stock Mínimo'] > 0]
                 df.to_excel(writer, sheet_name='TOP Bajo Mínimo', index=False, startrow=1, header=False)
 
                 worksheet = writer.sheets['TOP Bajo Mínimo']
