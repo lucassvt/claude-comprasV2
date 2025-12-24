@@ -103,11 +103,17 @@ class StockCalculator:
             """))
             row = result.fetchone()
             if row and row[0]:
-                metodo = row[0].strip().lower()
+                # La columna es JSONB, puede devolver string directamente
+                value = row[0]
+                if isinstance(value, str):
+                    metodo = value.strip().lower()
+                else:
+                    metodo = str(value).strip().lower()
                 if metodo in ('promedio_simple', 'mediana', 'combinado'):
+                    logger.info(f"Método de cálculo de demanda desde BD: {metodo}")
                     return metodo
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"Error leyendo método de cálculo: {e}")
         return settings.demand_calculation_method
 
     def calculate_all_stock_levels(

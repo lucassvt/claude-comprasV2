@@ -219,14 +219,22 @@ class ConfigService:
         """))
         row = result.fetchone()
         if row and row[0]:
-            try:
-                db_excluded = json.loads(row[0])
-                # Combinar sin duplicados
-                for dep in db_excluded:
-                    if dep not in excluded:
-                        excluded.append(dep)
-            except:
-                pass
+            # La columna es JSONB, puede venir ya deserializada como lista
+            value = row[0]
+            if isinstance(value, str):
+                try:
+                    db_excluded = json.loads(value)
+                except (json.JSONDecodeError, TypeError):
+                    db_excluded = []
+            elif isinstance(value, list):
+                db_excluded = value
+            else:
+                db_excluded = []
+
+            # Combinar sin duplicados
+            for dep in db_excluded:
+                if dep not in excluded:
+                    excluded.append(dep)
 
         logger.info(f"Depósitos excluidos: {excluded}")
         return excluded
@@ -256,10 +264,15 @@ class ConfigService:
         """))
         row = result.fetchone()
         if row and row[0]:
-            try:
-                return json.loads(row[0])
-            except:
-                return []
+            # La columna es JSONB, puede venir ya deserializada como lista
+            value = row[0]
+            if isinstance(value, str):
+                try:
+                    return json.loads(value)
+                except (json.JSONDecodeError, TypeError):
+                    return []
+            elif isinstance(value, list):
+                return value
         return []
 
     def save_excluded_brands(self, brands: List[str]) -> bool:
@@ -291,14 +304,22 @@ class ConfigService:
         """))
         row = result.fetchone()
         if row and row[0]:
-            try:
-                db_excluded = json.loads(row[0])
-                # Combinar sin duplicados
-                for cod in db_excluded:
-                    if cod not in excluded:
-                        excluded.append(cod)
-            except:
-                pass
+            # La columna es JSONB, puede venir ya deserializada como lista
+            value = row[0]
+            if isinstance(value, str):
+                try:
+                    db_excluded = json.loads(value)
+                except (json.JSONDecodeError, TypeError):
+                    db_excluded = []
+            elif isinstance(value, list):
+                db_excluded = value
+            else:
+                db_excluded = []
+
+            # Combinar sin duplicados
+            for cod in db_excluded:
+                if cod not in excluded:
+                    excluded.append(cod)
 
         logger.info(f"Productos excluidos: {excluded}")
         return excluded
