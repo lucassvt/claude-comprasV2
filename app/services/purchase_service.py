@@ -438,23 +438,22 @@ class PurchaseService:
                 ranking += 1
                 if info['depositos_bajo_minimo']:
                     for dep in info['depositos_bajo_minimo']:
-                        # Filtro adicional: solo incluir si stock_minimo > 0
-                        if dep['stock_minimo'] > 0:
+                        stock_min_redondeado = int(round(dep['stock_minimo']))
+                        # Solo incluir si stock_minimo redondeado > 0
+                        if stock_min_redondeado > 0:
                             data.append({
                                 'Ranking': ranking,
                                 'Código': info['cod_item'],
                                 'Producto': info['producto'],
                                 'Depósito': dep['deposito'],
                                 'Stock Actual': int(round(dep['stock_actual'])),
-                                'Stock Mínimo': int(round(dep['stock_minimo'])),
+                                'Stock Mínimo': stock_min_redondeado,
                                 'Faltante': int(round(dep['faltante'])),
                                 'Marca': info['marca']
                             })
 
             if data:
                 df = pd.DataFrame(data)
-                # FILTRO FINAL: eliminar cualquier fila con Stock Mínimo = 0
-                df = df[df['Stock Mínimo'] > 0]
                 df.to_excel(writer, sheet_name='TOP Bajo Mínimo', index=False, startrow=1, header=False)
 
                 worksheet = writer.sheets['TOP Bajo Mínimo']
