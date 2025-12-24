@@ -470,6 +470,16 @@ class PurchaseService:
                 worksheet.set_column('E:G', 14)   # Stock Actual, Stock Mínimo, Faltante
                 worksheet.set_column('H:H', 18)   # Marca
 
+                # Resaltar en rojo las celdas de Stock Actual <= 0 (productos críticos sin stock)
+                # Columna E es Stock Actual (índice 4, pero en Excel es columna E)
+                num_rows = len(df)
+                worksheet.conditional_format(1, 4, num_rows, 4, {
+                    'type': 'cell',
+                    'criteria': '<=',
+                    'value': 0,
+                    'format': alert_format
+                })
+
                 # Resumen en otra hoja
                 total_faltante = sum(d['Faltante'] for d in data)
                 resumen = [{
